@@ -1,6 +1,7 @@
 import torch
 import time
 import torch.nn.functional as F
+from itertools import chain
 
 class Encoder(torch.nn.Module):
     """
@@ -9,7 +10,7 @@ class Encoder(torch.nn.Module):
     """
     def __init__(self, n_feature, n_hidden):
         super(Encoder, self).__init__()
-        self.nn = torch.nn.Sequential(
+        self.main = torch.nn.Sequential(
                     torch.nn.Linear(n_feature, n_hidden),
                     torch.nn.ReLU()
                     )
@@ -19,7 +20,7 @@ class Encoder(torch.nn.Module):
         Definition of forward process
 
         """
-        x = self.nn(x)
+        x = self.main(x)
         return x
 
 class Decoder(torch.nn.Module):
@@ -29,7 +30,7 @@ class Decoder(torch.nn.Module):
     """
     def __init__(self, n_feature, n_output):
         super(Decoder, self).__init__()
-        self.nn = torch.nn.Sequential(
+        self.main = torch.nn.Sequential(
                     torch.nn.Linear(n_feature, n_output),
                     torch.nn.ReLU()
                     )
@@ -39,7 +40,7 @@ class Decoder(torch.nn.Module):
         Definition of forward process
 
         """
-        x = self.nn(x)
+        x = self.main(x)
         return x
 
 class simpleAE(torch.nn.Module):
@@ -60,6 +61,13 @@ class simpleAE(torch.nn.Module):
         self.encoder = Encoder(n_feature, n_hidden)
         self.decoder = Decoder(n_hidden, n_output)
         self.model_name = 'simpleAE'
+
+    def parameters(self):
+        """
+        Getting parameters
+
+        """
+        return chain(self.Encoder.parameters(), self.Decoder.parameters())
 
     def forward(self, x):
         """

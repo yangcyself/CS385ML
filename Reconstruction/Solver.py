@@ -22,9 +22,9 @@ class Solver():
 
         self.gpu_avaliable = torch.cuda.is_available()
 
-class AESolver(Solver):
+class LinearSolver(Solver):
     """
-    Simple AE Solver
+    Simple Linear Solver
 
     """
     def __init__(self, model, loss_function, optimizer):
@@ -32,7 +32,7 @@ class AESolver(Solver):
         Initialization
 
         """
-        super(AESolver, self).__init__(model, loss_function, optimizer)
+        super(LinearSolver, self).__init__(model, loss_function, optimizer)
 
     def validate(self, data_loader):
         """
