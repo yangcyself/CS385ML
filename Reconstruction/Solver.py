@@ -96,8 +96,8 @@ class ConvSolver(Solver):
             if i < later:
                 continue
 
-            if self.gpu_avaliable:
-                self.model.cpu()
+            # if self.gpu_avaliable:
+            #     self.model.cpu()
             start_time = time.time()
             dev_mse_loss = self.validate(valid_dataloader)
             print('Evaluation:\tEpoch : {}\tTime : {}s\tMSELoss : {}'.format(i, time.time() - start_time, dev_mse_loss))
@@ -129,7 +129,10 @@ class LinearSolver(Solver):
             data = data.view(data.shape[0], num_channels, -1)
             output = self.model(data)
             loss = self.loss_function(output.view_as(data), data)
-            results.append(loss.detach().numpy())
+            if self.gpu_avaliable:
+                results.append(loss.detach().cpu().numpy())
+            else:
+                results.append(loss.detach().numpy())
 
         mse_loss = np.mean(results)
         self.model.train()
@@ -175,8 +178,8 @@ class LinearSolver(Solver):
             if i < later:
                 continue
 
-            if self.gpu_avaliable:
-                self.model.cpu()
+            # if self.gpu_avaliable:
+            #     self.model.cpu()
             start_time = time.time()
             dev_mse_loss = self.validate(valid_dataloader)
             print('Evaluation:\tEpoch : {}\tTime : {}s\tMSELoss : {}'.format(i, time.time() - start_time, dev_mse_loss))

@@ -99,7 +99,6 @@ class Decoder(nn.Module):
         self.c_dim = c_dim
         self.z_dim = z_dim
         self.std = std
-        self.gpu_avaliable = torch.cuda.is_available()
         self.init_weights()
 
     def init_weights(self):
@@ -139,6 +138,7 @@ class ConvVAE(nn.Module):
         self.z_dim = z_dim
         self.num_channels = num_channels
         self.std = std
+        self.gpu_avaliable = torch.cuda.is_available()
 
         self.model_name = "ConvVAE"
         self.Encoder = Encoder(c_dim, z_dim, num_channels, std)
@@ -156,7 +156,10 @@ class ConvVAE(nn.Module):
         Simulation of sample process
 
         """
-        epsilon = Variable(torch.randn(mu.size()), requires_grad=False).type(torch.FloatTensor).cuda()
+        if self.gpu_avaliable:
+            epsilon = Variable(torch.randn(mu.size()), requires_grad=False).type(torch.FloatTensor).cuda()
+        else:
+            epsilon = Variable(torch.randn(mu.size()), requires_grad=False).type(torch.FloatTensor)
         sigma = torch.exp(log_sigma / 2)
         return mu + sigma * epsilon
 
