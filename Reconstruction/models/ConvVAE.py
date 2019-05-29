@@ -156,7 +156,7 @@ class ConvVAE(nn.Module):
         Simulation of sample process
 
         """
-        if self.gpu_avaliable:
+        if self.gpu_avaliable and isinstance(mu, torch.cuda.FloatTensor):
             epsilon = Variable(torch.randn(mu.size()), requires_grad=False).type(torch.FloatTensor).cuda()
         else:
             epsilon = Variable(torch.randn(mu.size()), requires_grad=False).type(torch.FloatTensor)
