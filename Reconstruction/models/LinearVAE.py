@@ -79,13 +79,13 @@ class LinearVAE(nn.Module):
         self.decoder = Decoder(z_dim, hidden, num_channels)
         self.model_name = "LinearVAE"
 
-    def sample_from_q(self, mu, log_sigma_sq):
+    def sample_from_q(self, mu, log_sigma):
         """
         VAE sample from Normal(mu, sigma)
 
         """
         epsilon = Variable(torch.randn(mu.size()), requires_grad=False).type(torch.FloatTensor)
-        sigma = torch.exp(log_sigma_sq / 2)
+        sigma = torch.exp(log_sigma / 2)
         return mu + sigma * epsilon
 
     def forward(self, x):

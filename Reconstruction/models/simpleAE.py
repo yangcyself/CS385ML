@@ -58,8 +58,8 @@ class simpleAE(torch.nn.Module):
 
         """
         super(simpleAE, self).__init__()
-        self.encoder = Encoder(n_feature, n_hidden)
-        self.decoder = Decoder(n_hidden, n_output)
+        self.Encoder = Encoder(n_feature, n_hidden)
+        self.Decoder = Decoder(n_hidden, n_output)
         self.model_name = 'simpleAE'
 
     def parameters(self):
