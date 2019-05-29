@@ -29,11 +29,9 @@ class StanfordDog(data.Dataset):
             self.imgs = []
             if os.path.exists(path=root+"/dogs.pickle"):
                 with open(root+"/dogs.pickle", 'rb') as load_data:
-                    self.name, self.labels = pickle.load(load_data)
-            for img_path, label in zip(self.name, self.labels):
-                img = cv2.imread(img_path)
+                    self.imgs, self.labels = pickle.load(load_data)
+            for img, label in zip(self.imgs, self.labels):
                 self.breed_dict[label] = img
-                imgs.append(img)
         else:
             self.train = train
             self.breed_dict = {}
@@ -73,7 +71,7 @@ class StanfordDog(data.Dataset):
 
     def save(self):
         with open("./dogs.pickle", 'wb') as save_data:
-            data_list = [self.name, self.labels]
+            data_list = [self.imgs, self.labels]
             pickle.dump(data_list, save_data)
 
     def __getitem__(self, index):

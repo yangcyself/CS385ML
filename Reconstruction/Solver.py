@@ -45,7 +45,10 @@ class ConvSolver(Solver):
             # print(data.shape)
             output = self.model(data)
             loss = self.loss_function(output.view_as(data), data)
-            results.append(loss.detach().numpy())
+            if self.gpu_avaliable:
+                results.append(loss.detach().cpu().numpy())
+            else:
+                results.append(loss.detach().numpy())
 
         mse_loss = np.mean(results)
         self.model.train()
@@ -79,7 +82,10 @@ class ConvSolver(Solver):
                 # print(output.shape)
                 batch_loss = self.loss_function(output.view_as(img), img)
                 # print(batch_loss)
-                losses.append(batch_loss.detach().numpy())
+                if self.gpu_avaliable:
+                    losses.append(batch_loss.detach().cpu().numpy())
+                else:
+                    losses.append(batch_loss.detach().cpu().numpy())
                 batch_loss.backward()
                 self.optimizer.step()
 
@@ -155,7 +161,10 @@ class LinearSolver(Solver):
                 output = self.model(img)
                 batch_loss = self.loss_function(output.view_as(img), img)
                 # print(batch_loss)
-                losses.append(batch_loss.detach().numpy())
+                if self.gpu_avaliable:
+                    losses.append(batch_loss.detach().cpu().numpy())
+                else:
+                    losses.append(batch_loss.detach().cpu().numpy())
                 batch_loss.backward()
                 self.optimizer.step()
 
