@@ -5,14 +5,21 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from utils.loss_function import select_loss_function
-from Solver import LinearSolver
+from utils.get_cdim import update_code_dim
+
+from data.dataset import StanfordDog
+from Solver import LinearSolver, ConvSolver
+
 from models.simpleAE import simpleAE
 from models.LinearVAE import LinearVAE
+from models.ConvVAE import ConvVAE
+
 from torchvision.datasets import MNIST
 from scipy.stats import norm
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--model', type=str, default='simpleAE', help='Choosing dataset')
+parser.add_argument('--model', type=str, default='simpleAE', help='Choosing model')
+parser.add_argument('--dataset', type=str, default='mnist', help='Choosing dataset')
 parser.add_argument('--learning_rate', type=float, default=1e-3, help='n-history')
 parser.add_argument('--hidden_size', type=int, default=128, help='hidden size')
 parser.add_argument('--batch_size', type=int, default=32, help='batch size')
@@ -29,15 +36,23 @@ loss_func = opt.loss_function
 optimizer = opt.optim
 hidden = opt.hidden_size
 batch_size = opt.batch_size
-dataset = 'mnist'
+dataset = opt.dataset
 
-train_loader = torch.utils.data.DataLoader(dataset=MNIST('./data/{0}'.format(dataset), train=True, transform=transforms.ToTensor()), batch_size=batch_size, shuffle=True)
-test_loader = torch.utils.data.DataLoader(dataset=MNIST('./data/{0}'.format(dataset), train=False, transform=transforms.ToTensor()), batch_size=batch_size, shuffle=True)
+if dataset == 'mnist':
+    channel = 1
+    train_loader = torch.utils.data.DataLoader(dataset=MNIST('./data/{0}'.format(dataset), train=True, transform=transforms.Compose([transforms.Resize(32), transforms.ToTensor()])), batch_size=batch_size, shuffle=True)
+    test_loader = torch.utils.data.DataLoader(dataset=MNIST('./data/{0}'.format(dataset), train=False, transform=transforms.Compose([transforms.Resize(32), transforms.ToTensor()])), batch_size=batch_size, shuffle=True)
+elif dataset == 'dog':
+    channel = 3
+    train_loader = torch.utils.data.DataLoader(dataset=StanfordDog(root='./data', train=True), batch_size=batch_size, shuffle=True)
+    test_loader = torch.utils.data.DataLoader(dataset=StanfordDog(root='./data', train=False), batch_size=batch_size, shuffle=True)
 
-if model_name == 'simpleAE':
-    model = simpleAE(n_feature=28*28, n_hidden=hidden, n_output=28*28)
-elif model_name == 'LinearVAE':
-    model = LinearVAE(z_dim=256, hidden=512, num_channels=28*28)
+if model_name.lower() == 'simpleae':
+    model = simpleAE(n_feature=32*32*channel, n_hidden=hidden, n_output=32*32*channel)
+elif model_name.lower() == 'linearvae':
+    model = LinearVAE(z_dim=hidden, hidden=512, num_channels=32*32*channel)
+elif model_name.lower() == 'convvae':
+    model = ConvVAE(c_dim=update_code_dim(128, 32, 4), z_dim=128, num_channels=channel)
 
 loss_function = select_loss_function(loss_func)
 
@@ -49,50 +64,73 @@ elif optimizer.lower() == 'sgd':
 elif optimizer.lower() == 'rmsprop':
     optimizer = torch.optim.RMSprop(params, lr=learning_rate)
 
-checkpoints = glob.glob(pathname='checkpoints/{0}*'.format(model_name))
+checkpoints = glob.glob(pathname='checkpoints/{0}_{1}*'.format(model_name, dataset))
 if len(checkpoints) != 0:
     model.load(path=checkpoints[0])
 
-    noise = np.random.normal(size=(1, hidden))
-    output = model.decoder(torch.from_numpy(noise).float()).detach().numpy().reshape(28, 28)
-    # cv2.imshow("output", output)
-    # cv2.waitKey(0)
-
     n = 15  # figure with 15x15 digits
-    digit_size = 28
-    figure = np.zeros((digit_size * n, digit_size * n))
+    digit_size = 32
+    figure = np.zeros((digit_size * n, digit_size * n, channel))
+    figure1 = np.zeros((digit_size * n, digit_size * n))
+    figure2 = np.zeros((digit_size * n, digit_size * n))
     grid_x = norm.ppf(np.linspace(0.05, 0.95, n))
     grid_y = norm.ppf(np.linspace(0.05, 0.95, n))
 
     eg, _ = next(iter(train_loader))
-    mu, sigma = model.encoder(eg.view(eg.shape[0], 1, -1))
-    epsilon = torch.autograd.Variable(torch.randn(mu.size()), requires_grad=False).type(torch.FloatTensor)
-    sigma = torch.exp(sigma / 2)
-    z = (mu + sigma * epsilon).detach().numpy()[0, 0, :]
+    print(eg.shape)
+    if model.model_name == 'LinearVAE':
+        mu, sigma = model.encoder(eg.view(eg.shape[0], 1, -1))
+        epsilon = torch.autograd.Variable(torch.randn(mu.size()), requires_grad=False).type(torch.FloatTensor)
+        sigma = torch.exp(sigma / 2)
+        print(sigma.shape)
+        z = (mu + sigma * epsilon).detach().numpy()[0, 0, :]
+        print(z)
+    elif model.model_name == 'ConvVAE':
+        mu, sigma = model.Encoder(eg)
+        epsilon = torch.autograd.Variable(torch.randn(mu.size()), requires_grad=False).type(torch.FloatTensor)
+        sigma = torch.exp(sigma / 2)
+        print(sigma.shape)
+        z = (mu + sigma * epsilon).detach().numpy()[0, :].reshape(1, -1)
 
-    output = model.decoder(torch.from_numpy(z).float()).detach().numpy().reshape(28, 28)
+    output = model.Decoder(torch.from_numpy(z).float()).reshape([channel, 32, 32])
+    print(output.shape)
     plt.subplot(121)
-    plt.imshow(output)
+    plt.imshow(transforms.ToPILImage()(output[:, :, :]).convert('RGB'))
     plt.subplot(122)
-    plt.imshow(eg[0, 0, :, :].numpy())
+    plt.imshow(transforms.ToPILImage()(eg[0, :, :, :]).convert('RGB'))
     plt.show()
 
-    for i, yi in enumerate(grid_x):
-        for j, xi in enumerate(grid_y):
-            z_sample = np.array([xi, yi] + list(z[2:]))
-            x_decoded = model.decoder(torch.from_numpy(z_sample).float()).detach().numpy()
-            digit = x_decoded.reshape(digit_size, digit_size)
-            figure[i * digit_size: (i + 1) * digit_size,
-                   j * digit_size: (j + 1) * digit_size] = digit
+    if model.model_name == 'LinearVAE':
+        for i, yi in enumerate(grid_x):
+            for j, xi in enumerate(grid_y):
+                z_sample = np.array([xi, yi] + list(z[2:]))
+                x_decoded = model.decoder(torch.from_numpy(z_sample).float()).reshape([channel, 32, 32])
+                digit = transforms.ToPILImage()(x_decoded[:, :, :]).convert('RGB')
+                figure[i * digit_size: (i + 1) * digit_size,
+                       j * digit_size: (j + 1) * digit_size, :] = digit
+    elif model.model_name == 'ConvVAE':
+        for i, yi in enumerate(grid_x):
+            for j, xi in enumerate(grid_y):
+                z_sample = np.array([xi, yi] + list(z[0, 2:])).reshape(1, -1)
+                x_decoded = model.Decoder(torch.from_numpy(z_sample).float()).reshape([channel, 32, 32])
+                digit = transforms.ToPILImage()(x_decoded[:, :, :]).convert('RGB')
+                figure[i * digit_size: (i + 1) * digit_size,
+                       j * digit_size: (j + 1) * digit_size, :] = digit
 
-    plt.figure(figsize=(10, 10))
-    plt.imshow(figure, cmap='Greys_r')
-    plt.show()
+    if dataset == 'mnist':
+        plt.figure(figsize=(10, 10))
+        plt.imshow(figure, cmap='gray_r')
+        plt.show()
+    elif dataset == 'dog':
+        plt.figure(figsize=(10, 10))
+        plt.imshow(figure)
+        plt.show()
 else:
-    if model_name == 'simpleAE':
-        solver = LinearSolver(model, loss_function, optimizer)
-    elif model_name == 'LinearVAE':
-        solver = LinearSolver(model, loss_function, optimizer)
+    if model_name.lower() == 'simpleae' or model_name.lower() == 'linearvae':
+        solver = LinearSolver(model, loss_function, optimizer, channel)
+    else:
+        solver = ConvSolver(model, loss_function, optimizer)
+
     print(model)
     solver.train_and_decode(train_loader, test_loader, test_loader, max_epoch=max_epoch)
     print("training phase finished")
