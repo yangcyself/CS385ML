@@ -51,7 +51,7 @@ if len(checkpoints) != 0:
 
 def preprocess(image_path):
     raw_image = cv2.imread(image_path)
-    raw_image = cv2.resize(raw_image, (32,) * 2)
+    raw_image = cv2.resize(raw_image, (32,) * 2) # this 32 is correspondent to the 32 in c_dim
     image = transforms.Compose(
         [
             transforms.ToTensor(),

@@ -29,21 +29,21 @@ class _BaseWrapper(object):
     def _encode_one_hot(self, pos, size):
         # pos is a N*2 tensor, suggesting the left upper corner of area, size is a two element tuple
         print(self.out.shape)
-        N,H,W = self.out.shape
+        N,C,H,W = self.out.shape
         assert(pos.shape==(N,2))
         pos = torch.Tensor(pos).to(self.device)
         one_hot = torch.zeros_like(self.out).to(self.device)
         src_idx = torch.Tensor(np.arange(0,size[1])).to(self.device) #  W_
-        src_idx = torch.ones(N,H,*(src_idx.shape)).to(self.device) * src_idx.reshape(1,1,*(src_idx.shape)) # N, H, W_
+        src_idx = torch.ones(N,C,H,*(src_idx.shape)).to(self.device) * src_idx.reshape(1,1,1,*(src_idx.shape)) # N, C, H, W_
     #     print(pos[:,1].reshape(N,1,1))
-        src_idx = src_idx+pos[:,1].reshape(N,1,1) # add the y to each row
+        src_idx = src_idx+pos[:,1].reshape(N,1,1,1) # add the y to each row
         src_idx = src_idx.long()
         src = torch.zeros_like(self.out).to(self.device)
         src.scatter_(2,src_idx,1.0) #N, H, W
 
         idx = torch.Tensor(np.arange(0,size[0])).to(self.device) #  H_
-        idx = torch.ones(N,*(idx.shape),W).to(self.device) * idx.reshape(1,*(idx.shape),1) # N, H_, W
-        idx = idx + (pos[:,0]).reshape(N,1,1)
+        idx = torch.ones(N,C,*(idx.shape),W).to(self.device) * idx.reshape(1,1,*(idx.shape),1) # N, C, H_, W
+        idx = idx + (pos[:,0]).reshape(N,1,1,1)
         
         idx = idx.long()
         one_hot.scatter_(1,idx,src)
