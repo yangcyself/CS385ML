@@ -84,7 +84,7 @@ class ConvSolver(Solver):
                 if self.gpu_avaliable:
                     losses.append(batch_loss.detach().cpu().numpy())
                 else:
-                    losses.append(batch_loss.detach().cpu().numpy())
+                    losses.append(batch_loss.detach().numpy())
                 batch_loss.backward()
                 self.optimizer.step()
 
@@ -163,7 +163,7 @@ class LinearSolver(Solver):
                 if self.gpu_avaliable:
                     losses.append(batch_loss.detach().cpu().numpy())
                 else:
-                    losses.append(batch_loss.detach().cpu().numpy())
+                    losses.append(batch_loss.detach().numpy())
                 batch_loss.backward()
                 self.optimizer.step()
 

@@ -20,6 +20,7 @@ from scipy.stats import norm
 parser = argparse.ArgumentParser()
 parser.add_argument('--model', type=str, default='simpleAE', help='Choosing model')
 parser.add_argument('--dataset', type=str, default='mnist', help='Choosing dataset')
+parser.add_argument('--datasize', type=int, default=32, help='Choosing data size')
 parser.add_argument('--learning_rate', type=float, default=1e-3, help='n-history')
 parser.add_argument('--hidden_size', type=int, default=128, help='hidden size')
 parser.add_argument('--batch_size', type=int, default=32, help='batch size')
@@ -30,6 +31,7 @@ parser.add_argument('--optim', default='adam', choices=['adadelta', 'sgd', 'adam
 
 opt = parser.parse_args()
 model_name = opt.model
+datasize = opt.datasize
 learning_rate = opt.learning_rate
 max_epoch = opt.max_epoch
 loss_func = opt.loss_function
@@ -40,12 +42,12 @@ dataset = opt.dataset
 
 if dataset == 'mnist':
     channel = 1
-    train_loader = torch.utils.data.DataLoader(dataset=MNIST('./data/{0}'.format(dataset), train=True, transform=transforms.Compose([transforms.Resize(32), transforms.ToTensor()])), batch_size=batch_size, shuffle=True)
-    test_loader = torch.utils.data.DataLoader(dataset=MNIST('./data/{0}'.format(dataset), train=False, transform=transforms.Compose([transforms.Resize(32), transforms.ToTensor()])), batch_size=batch_size, shuffle=True)
+    train_loader = torch.utils.data.DataLoader(dataset=MNIST('./data/{0}'.format(dataset), train=True, transform=transforms.Compose([transforms.Resize(datasize), transforms.ToTensor()])), batch_size=batch_size, shuffle=True)
+    test_loader = torch.utils.data.DataLoader(dataset=MNIST('./data/{0}'.format(dataset), train=False, transform=transforms.Compose([transforms.Resize(datasize), transforms.ToTensor()])), batch_size=batch_size, shuffle=True)
 elif dataset == 'dog':
     channel = 3
-    train_loader = torch.utils.data.DataLoader(dataset=StanfordDog(root='./data', train=True), batch_size=batch_size, shuffle=True)
-    test_loader = torch.utils.data.DataLoader(dataset=StanfordDog(root='./data', train=False), batch_size=batch_size, shuffle=True)
+    train_loader = torch.utils.data.DataLoader(dataset=StanfordDog(root='./data', train=True, size=datasize), batch_size=batch_size, shuffle=True)
+    test_loader = torch.utils.data.DataLoader(dataset=StanfordDog(root='./data', train=False, size=datasize), batch_size=batch_size, shuffle=True)
 
 if model_name.lower() == 'simpleae':
     model = simpleAE(n_feature=32*32*channel, n_hidden=hidden, n_output=32*32*channel)
@@ -79,10 +81,10 @@ if len(checkpoints) != 0:
     eg, _ = next(iter(train_loader))
     print(eg.shape)
     if model.model_name == 'LinearVAE':
-        mu, sigma = model.encoder(eg.view(eg.shape[0], 1, -1))
+        mu, sigma = model.Encoder(eg.view(eg.shape[0], 1, -1))
+        print(sigma)
         epsilon = torch.autograd.Variable(torch.randn(mu.size()), requires_grad=False).type(torch.FloatTensor)
         sigma = torch.exp(sigma / 2)
-        print(sigma.shape)
         z = (mu + sigma * epsilon).detach().numpy()[0, 0, :]
         print(z)
     elif model.model_name == 'ConvVAE':
@@ -92,7 +94,7 @@ if len(checkpoints) != 0:
         print(sigma.shape)
         z = (mu + sigma * epsilon).detach().numpy()[0, :].reshape(1, -1)
 
-    output = model.decoder(torch.from_numpy(z).float()).reshape([channel, 32, 32])
+    output = model.Decoder(torch.from_numpy(z).float()).reshape([channel, 32, 32])
     print(output.shape)
     plt.subplot(121)
     plt.imshow(transforms.ToPILImage()(output[:, :, :]).convert('RGB'))
@@ -106,7 +108,7 @@ if len(checkpoints) != 0:
                 print(xi, yi)
                 z_sample = np.array([xi, yi] + list(z[2:]))
                 print(z_sample)
-                x_decoded = model.decoder(torch.from_numpy(z_sample).float()).reshape([channel, 32, 32])
+                x_decoded = model.Decoder(torch.from_numpy(z_sample).float()).reshape([channel, 32, 32])
                 digit = x_decoded.detach().numpy().reshape(32, 32)
                 # plt.imshow(digit)
                 # plt.show()
