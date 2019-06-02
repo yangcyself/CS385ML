@@ -42,7 +42,7 @@ from scipy.stats import norm
 
 
 channel = 3
-model = ConvVAE(c_dim=update_code_dim(128, 32, 4), z_dim=128, num_channels=channel)
+model = ConvVAE(c_dim=update_code_dim(128, 32, 4), z_dim=128, num_channels=channel) # the update_code_dim means(num_filters_in_final_layer, img_size, num_conv_layers)
 model = model.cuda()
 
 checkpoints = glob.glob(pathname='checkpoints/{0}_{1}*'.format("ConvVAE", "dog"))
@@ -51,7 +51,7 @@ if len(checkpoints) != 0:
 
 def preprocess(image_path):
     raw_image = cv2.imread(image_path)
-    raw_image = cv2.resize(raw_image, (224,) * 2)
+    raw_image = cv2.resize(raw_image, (32,) * 2)
     image = transforms.Compose(
         [
             transforms.ToTensor(),

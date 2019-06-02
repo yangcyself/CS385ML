@@ -28,6 +28,7 @@ class _BaseWrapper(object):
 
     def _encode_one_hot(self, pos, size):
         # pos is a N*2 tensor, suggesting the left upper corner of area, size is a two element tuple
+        print(self.out.shape)
         N,H,W = self.out.shape
         assert(pos.shape==(N,2))
         pos = torch.Tensor(pos).to(self.device)
