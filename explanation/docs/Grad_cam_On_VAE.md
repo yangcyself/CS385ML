@@ -51,8 +51,8 @@ grad-cam之所以不好的原因是grad-cam有一个假设，它假设我们选�
 
 
 
-![1559482926413](D:\yangcy\UNVjunior\CS385\PROJ2\CS385ML\explanation\docs\pics\1559482926413.png)![1559483007793](D:\yangcy\UNVjunior\CS385\PROJ2\CS385ML\explanation\docs\pics\1559483007793.png)
+![1559482926413](./pics/1559482926413.png)![1559483007793](./pics/1559483007793.png)
 
-![1559483119894](D:\yangcy\UNVjunior\CS385\PROJ2\CS385ML\explanation\docs\pics\1559483119894.png)![1559483131063](D:\yangcy\UNVjunior\CS385\PROJ2\CS385ML\explanation\docs\pics\1559483131063.png)
+![1559483119894](./pics/1559483119894.png)![1559483131063](./pics/1559483131063.png)
 
 可以看出，除了对对应的区域外敏感之外，还对整个数字的轮廓敏感，这说明网络学到了一些东西
