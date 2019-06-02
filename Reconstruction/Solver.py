@@ -43,6 +43,8 @@ class ConvSolver(Solver):
         results = []
         for idx, (data, label) in enumerate(data_loader):
             # print(data.shape)
+            if self.gpu_avaliable:
+                data = data.cuda()
             output = self.model(data)
             loss = self.loss_function(output.view_as(data), data)
             results.append(loss.detach().numpy())
