@@ -47,7 +47,10 @@ class ConvSolver(Solver):
                 data = data.cuda()
             output = self.model(data)
             loss = self.loss_function(output.view_as(data), data)
-            results.append(loss.detach().numpy())
+            r_loss = loss
+            if(self.gpu_avaliable):
+                r_loss = loss.cpu() 
+            results.append(r_loss.detach().numpy())
 
         mse_loss = np.mean(results)
         self.model.train()
@@ -95,8 +98,8 @@ class ConvSolver(Solver):
             if i < later:
                 continue
 
-            if self.gpu_avaliable:
-                self.model.cpu()
+            #if self.gpu_avaliable:
+            #    self.model.cpu()
             start_time = time.time()
             dev_mse_loss = self.validate(valid_dataloader)
             print('Evaluation:\tEpoch : {}\tTime : {}s\tMSELoss : {}'.format(i, time.time() - start_time, dev_mse_loss))
@@ -174,8 +177,8 @@ class LinearSolver(Solver):
             if i < later:
                 continue
 
-            if self.gpu_avaliable:
-                self.model.cpu()
+            #if self.gpu_avaliable:
+            #    self.model.cpu()
             start_time = time.time()
             dev_mse_loss = self.validate(valid_dataloader)
             print('Evaluation:\tEpoch : {}\tTime : {}s\tMSELoss : {}'.format(i, time.time() - start_time, dev_mse_loss))

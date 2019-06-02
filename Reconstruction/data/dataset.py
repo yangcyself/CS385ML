@@ -54,7 +54,7 @@ class StanfordDog(data.Dataset):
 
                     img = cv2.imread(root + '/Images/' + annot_list[-2] + '/' + annot_list[-1] + '.jpg')
                     self.name.append(root + '/Images/' + annot_list[-2] + '/' + annot_list[-1] + '.jpg')
-                    print("Processing " + root + '/Images/' + annot_list[-2] + '/' + annot_list[-1] + '.jpg')
+                    #print("Processing " + root + '/Images/' + annot_list[-2] + '/' + annot_list[-1] + '.jpg')
                     xmin = int(objChildren[4].getchildren()[0].text)
                     xmax = int(objChildren[4].getchildren()[2].text)
                     ymin = int(objChildren[4].getchildren()[1].text)
@@ -75,7 +75,7 @@ class StanfordDog(data.Dataset):
             pickle.dump(data_list, save_data)
 
     def __getitem__(self, index):
-        tmp = cv2.resize(self.imgs[index], (32, 32))
+        tmp = cv2.resize(self.imgs[index], (96, 96))
         tmp = cv2.cvtColor(tmp, cv2.COLOR_BGR2RGB)
         img = Image.fromarray(tmp)
         img = self.transforms(img)
