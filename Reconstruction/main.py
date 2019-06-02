@@ -64,7 +64,7 @@ elif optimizer.lower() == 'sgd':
 elif optimizer.lower() == 'rmsprop':
     optimizer = torch.optim.RMSprop(params, lr=learning_rate)
 
-checkpoints = glob.glob(pathname='checkpoints/{0}_{1}*'.format(model_name, dataset))
+checkpoints = glob.glob(pathname='checkpoints/{0}_{1}_{2}*'.format(model_name, hidden, dataset))
 if len(checkpoints) != 0:
     model.load(path=checkpoints[0])
 
@@ -72,9 +72,9 @@ if len(checkpoints) != 0:
     digit_size = 32
     figure = np.zeros((digit_size * n, digit_size * n, channel))
     figure1 = np.zeros((digit_size * n, digit_size * n))
-    figure2 = np.zeros((digit_size * n, digit_size * n))
-    grid_x = norm.ppf(np.linspace(0.05, 0.95, n))
-    grid_y = norm.ppf(np.linspace(0.05, 0.95, n))
+    grid_x = np.linspace(-5, 5, n)
+    grid_y = np.linspace(-5, 5, n)
+    print(grid_x)
 
     eg, _ = next(iter(train_loader))
     print(eg.shape)
@@ -92,7 +92,7 @@ if len(checkpoints) != 0:
         print(sigma.shape)
         z = (mu + sigma * epsilon).detach().numpy()[0, :].reshape(1, -1)
 
-    output = model.Decoder(torch.from_numpy(z).float()).reshape([channel, 32, 32])
+    output = model.decoder(torch.from_numpy(z).float()).reshape([channel, 32, 32])
     print(output.shape)
     plt.subplot(121)
     plt.imshow(transforms.ToPILImage()(output[:, :, :]).convert('RGB'))
@@ -103,11 +103,15 @@ if len(checkpoints) != 0:
     if model.model_name == 'LinearVAE':
         for i, yi in enumerate(grid_x):
             for j, xi in enumerate(grid_y):
+                print(xi, yi)
                 z_sample = np.array([xi, yi] + list(z[2:]))
+                print(z_sample)
                 x_decoded = model.decoder(torch.from_numpy(z_sample).float()).reshape([channel, 32, 32])
-                digit = transforms.ToPILImage()(x_decoded[:, :, :]).convert('RGB')
-                figure[i * digit_size: (i + 1) * digit_size,
-                       j * digit_size: (j + 1) * digit_size, :] = digit
+                digit = x_decoded.detach().numpy().reshape(32, 32)
+                # plt.imshow(digit)
+                # plt.show()
+                figure1[i * digit_size: (i + 1) * digit_size,
+                       j * digit_size: (j + 1) * digit_size] = digit
     elif model.model_name == 'ConvVAE':
         for i, yi in enumerate(grid_x):
             for j, xi in enumerate(grid_y):
@@ -119,7 +123,7 @@ if len(checkpoints) != 0:
 
     if dataset == 'mnist':
         plt.figure(figsize=(10, 10))
-        plt.imshow(figure, cmap='gray_r')
+        plt.imshow(figure1, cmap='gray_r')
         plt.show()
     elif dataset == 'dog':
         plt.figure(figsize=(10, 10))
@@ -134,4 +138,4 @@ else:
     print(model)
     solver.train_and_decode(train_loader, test_loader, test_loader, max_epoch=max_epoch)
     print("training phase finished")
-    model.save()
+    model.save(dataset=dataset)
