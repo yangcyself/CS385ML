@@ -39,14 +39,14 @@ class _BaseWrapper(object):
         src_idx = src_idx+pos[:,1].reshape(N,1,1,1) # add the y to each row
         src_idx = src_idx.long()
         src = torch.zeros_like(self.out).to(self.device)
-        src.scatter_(2,src_idx,1.0) #N, H, W
+        src.scatter_(3,src_idx,1.0) #N, H, W
 
         idx = torch.Tensor(np.arange(0,size[0])).to(self.device) #  H_
         idx = torch.ones(N,C,*(idx.shape),W).to(self.device) * idx.reshape(1,1,*(idx.shape),1) # N, C, H_, W
         idx = idx + (pos[:,0]).reshape(N,1,1,1)
         
         idx = idx.long()
-        one_hot.scatter_(1,idx,src)
+        one_hot.scatter_(2,idx,src)
         return one_hot       
 
     def forward(self, image):

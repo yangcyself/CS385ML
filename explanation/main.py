@@ -2,6 +2,7 @@ from VAE_grad_cam import *
 import sys
 sys.path.append("../Reconstruction/")
 import cv2
+
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import numpy as np
@@ -81,6 +82,7 @@ gradient = gradient.cpu().numpy().transpose(1, 2, 0)
 gradient -= gradient.min()
 gradient /= gradient.max()
 gradient *= 255.0
-plt.imshow(gradient)
-plt.show()
+print(gradient.shape)
+gradient = np.uint8(gradient)
+plt.imsave("gradient.png",gradient)
 
