@@ -4,7 +4,7 @@
 
 下图可以看出移植的效果还是有一些的：
 
-![1559467227825](D:\yangcy\UNVjunior\CS385\PROJ2\CS385ML\explanation\docs\pics\1559467227825.png)![1559467240660](D:\yangcy\UNVjunior\CS385\PROJ2\CS385ML\explanation\docs\pics\1559467240660.png)![1559467267433](D:\yangcy\UNVjunior\CS385\PROJ2\CS385ML\explanation\docs\pics\1559467267433.png)![1559467420196](D:\yangcy\UNVjunior\CS385\PROJ2\CS385ML\explanation\docs\pics\1559467420196.png)
+![1559467227825](./pics/1559467227825.png)![1559467240660](./pics/1559467240660.png)![1559467267433](./pics/1559467267433.png)![1559467420196](./pics/1559467420196.png)
 
 可以看到，当我们选取不同区域的时候，右上角图片的黑色位置，对应左上角图片的guided gradient的亮的部分也集中在相应的区域，**这一点可以说明我代码改写的基本合理**。
 
@@ -18,11 +18,11 @@
 
 下面两个图左右分别应该：
 
-![1559468525389](D:\yangcy\UNVjunior\CS385\PROJ2\CS385ML\explanation\docs\pics\1559468525389.png)![1559468542819](D:\yangcy\UNVjunior\CS385\PROJ2\CS385ML\explanation\docs\pics\1559468542819.png)
+![1559468525389](./pics/1559468525389.png)![1559468542819](./pics/1559468542819.png)
 
 这种的，但是结果却这个屎样。。。。
 
-![1559468094674](D:\yangcy\UNVjunior\CS385\PROJ2\CS385ML\explanation\docs\pics\1559468094674.png)![1559468113965](D:\yangcy\UNVjunior\CS385\PROJ2\CS385ML\explanation\docs\pics\1559468113965.png)![1559468127811](D:\yangcy\UNVjunior\CS385\PROJ2\CS385ML\explanation\docs\pics\1559468127811.png)![1559468143972](D:\yangcy\UNVjunior\CS385\PROJ2\CS385ML\explanation\docs\pics\1559468143972.png)![1559468157037](D:\yangcy\UNVjunior\CS385\PROJ2\CS385ML\explanation\docs\pics\1559468157037.png)![1559468173140](D:\yangcy\UNVjunior\CS385\PROJ2\CS385ML\explanation\docs\pics\1559468173140.png)![1559468190702](D:\yangcy\UNVjunior\CS385\PROJ2\CS385ML\explanation\docs\pics\1559468190702.png)![1559468218827](D:\yangcy\UNVjunior\CS385\PROJ2\CS385ML\explanation\docs\pics\1559468218827.png)
+![1559468094674](./pics/1559468094674.png)![1559468113965](./pics/1559468113965.png)![1559468127811](./pics/1559468127811.png)![1559468143972](./pics/1559468143972.png)![1559468157037](./pics/1559468157037.png)![1559468173140](./pics/1559468173140.png)![1559468190702](./pics/1559468190702.png)![1559468218827](./pics/1559468218827.png)
 
 
 
