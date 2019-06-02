@@ -53,7 +53,7 @@ elif model_name.lower() == 'linearvae':
     model = LinearVAE(z_dim=hidden, hidden=512, num_channels=32*32*channel)
 elif model_name.lower() == 'convvae':
     #model = ConvVAE(c_dim=update_code_dim(128, 32, 4), z_dim=128, num_channels=channel)
-    model = ConvVAE(c_dim=update_code_dim(128, 100, 4), z_dim=128, num_channels=channel)
+    model = ConvVAE(c_dim=update_code_dim(128, 96, 4), z_dim=1024, num_channels=channel)
 
 loss_function = select_loss_function(loss_func)
 
