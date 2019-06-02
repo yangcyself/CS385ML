@@ -63,6 +63,7 @@ class Encoder(torch.nn.Module):
         """
         h = self.main(input)
         h = h.resize(h.size(0), h.size(1) * h.size(2) * h.size(3))
+        # print(h.shape)
         return self.linear_mu(h), self.sigma(h)
 
 class Decoder(nn.Module):
