@@ -8,7 +8,7 @@ import time
 
 class Encoder(nn.Module):
     """
-    Class encoder
+    Class Encoder
 
     """
     def __init__(self, z_dim, hidden_size, num_channels):
@@ -65,7 +65,7 @@ class Decoder(nn.Module):
 
 class LinearVAE(nn.Module):
     """
-    Class VAE containing encoder & decoder using Linear layers
+    Class VAE containing Encoder & Decoder using Linear layers
 
     """
     def __init__(self, z_dim, hidden, num_channels):
@@ -75,8 +75,8 @@ class LinearVAE(nn.Module):
         """
         super(LinearVAE, self).__init__()
 
-        self.encoder = Encoder(z_dim, hidden, num_channels)
-        self.decoder = Decoder(z_dim, hidden, num_channels)
+        self.Encoder = Encoder(z_dim, hidden, num_channels)
+        self.Decoder = Decoder(z_dim, hidden, num_channels)
         self.z_dim = z_dim
         self.model_name = "LinearVAE"
 
@@ -94,9 +94,9 @@ class LinearVAE(nn.Module):
         Definition of forward process
 
         """
-        mu, sigma = self.encoder(x)
+        mu, sigma = self.Encoder(x)
         z = self.sample_from_q(mu, sigma)
-        return self.decoder(z)
+        return self.Decoder(z)
 
     def load(self, path):
         """
