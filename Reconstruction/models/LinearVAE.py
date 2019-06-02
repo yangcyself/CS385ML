@@ -77,6 +77,7 @@ class LinearVAE(nn.Module):
 
         self.encoder = Encoder(z_dim, hidden, num_channels)
         self.decoder = Decoder(z_dim, hidden, num_channels)
+        self.z_dim = z_dim
         self.model_name = "LinearVAE"
 
     def sample_from_q(self, mu, log_sigma):
@@ -104,13 +105,13 @@ class LinearVAE(nn.Module):
         """
         self.load_state_dict(torch.load(path))
 
-    def save(self, name=None):
+    def save(self, dataset, name=None):
         """
         save model to given path with time as name
 
         """
         if name is None:
-            prefix = 'checkpoints/' + self.model_name + '_'
+            prefix = 'checkpoints/' + self.model_name + '_' + str(self.z_dim) + '_' + dataset + '_'
             name = time.strftime(prefix + '%m%d_%H:%M:%S.pth')
         torch.save(self.state_dict(), name)
         return name

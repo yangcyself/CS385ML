@@ -123,7 +123,7 @@ class LinearSolver(Solver):
         results = []
         for idx, (data, label) in enumerate(data_loader):
             # print(data.shape)
-            data = data.view(data.shape[0], num_channels, -1)
+            data = data.view(data.shape[0], data.shape[1], -1)
             output = self.model(data)
             loss = self.loss_function(output.view_as(data), data)
             results.append(loss.detach().numpy())
@@ -148,10 +148,10 @@ class LinearSolver(Solver):
             for idx, (img, label) in enumerate(train_dataloader):
                 # print(img.shape)
                 if self.gpu_avaliable:
-                    img = torch.autograd.Variable(img.view(img.shape[0], num_channels, -1)).cuda()
+                    img = torch.autograd.Variable(img.view(img.shape[0], img.shape[1], -1)).cuda()
                     # label = torch.autograd.Variable(label).cuda()
                 else:
-                    img = torch.autograd.Variable(img.view(img.shape[0], num_channels, -1))
+                    img = torch.autograd.Variable(img.view(img.shape[0], img.shape[1], -1))
                     # label = torch.autograd.Variable(label)
 
                 self.optimizer.zero_grad()
