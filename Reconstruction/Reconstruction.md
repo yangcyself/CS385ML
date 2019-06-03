@@ -94,9 +94,10 @@ Current Work & Problems
 
 - Various hidden size result in different result. A low dimension hidden size can lead us visualize the effect of each dimension. For example, I fixed except 2 dimensions and let the two dimension vary. We can see that the number style varies.
   ![v](vary.png)
-- Conv VAE & Linear VAE works almost the same on mnist dataset, but on dog dataset we may see some difference. (Graph will be added later)
-- Problem : BCE Loss works very bad when dealing with dog dataset. But MSE works well both of the dataset. WHY?
-- As said by its mathmetical underground, the VAE can merge two styles of number or dog by a subtle combination. (Graph will be added later)
+- Conv VAE & Linear VAE works almost the same on mnist dataset, but on dog dataset we may see some difference.
+- Problem : BCE Loss works very bad when dealing with dog dataset. But MSE works well both of the dataset. WHY? Cannot be set as Gaussian Distribution.
+- As said by its mathmetical underground, the VAE can merge two styles of number or dog by a subtle combination. 
+  ![d](./mix.png)
 - TO BE CONTINUED
   GAN, pixelRNN and other generative model
   More experiments on explainable generative model
