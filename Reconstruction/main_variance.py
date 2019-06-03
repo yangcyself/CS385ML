@@ -82,31 +82,39 @@ if len(checkpoints) != 0:
     print(eg.shape)
     if model.model_name == 'LinearVAE':
         mu, sigma = model.Encoder(eg.view(eg.shape[0], 1, -1))
-        print(sigma)
+        print(mu.shape, sigma.shape)
         epsilon = torch.autograd.Variable(torch.randn(mu.size()), requires_grad=False).type(torch.FloatTensor)
         sigma = torch.exp(sigma / 2)
-        z = (mu + sigma * epsilon).detach().numpy()[0, 0, :]
-        print(z)
+        z1 = (mu + sigma * epsilon).detach().numpy()[0, 0, :]
+        z2 = (mu + sigma * epsilon).detach().numpy()[1, 0, :]
+        print(z1)
     elif model.model_name == 'ConvVAE':
         mu, sigma = model.Encoder(eg)
         epsilon = torch.autograd.Variable(torch.randn(mu.size()), requires_grad=False).type(torch.FloatTensor)
         sigma = torch.exp(sigma / 2)
         print(sigma.shape)
-        z = (mu + sigma * epsilon).detach().numpy()[0, :].reshape(1, -1)
+        z1 = (mu + sigma * epsilon).detach().numpy()[0, :].reshape(1, -1)
 
-    output = model.Decoder(torch.from_numpy(z).float()).reshape([channel, 32, 32])
+    z = (z1 + z2) / 2
+    output = model.Decoder(torch.from_numpy(z1).float()).reshape([channel, 32, 32])
+    output1 = model.Decoder(torch.from_numpy(z2).float()).reshape([channel, 32, 32])
+    output2 = model.Decoder(torch.from_numpy(z).float()).reshape([channel, 32, 32])
     print(output.shape)
-    plt.subplot(121)
+    plt.subplot(221)
     plt.imshow(transforms.ToPILImage()(output[:, :, :]).convert('RGB'))
-    plt.subplot(122)
-    plt.imshow(transforms.ToPILImage()(eg[0, :, :, :]).convert('RGB'))
+    plt.subplot(222)
+    plt.imshow(transforms.ToPILImage()(output1[:, :, :]).convert('RGB'))
+    plt.subplot(223)
+    plt.imshow(transforms.ToPILImage()(output2[:, :, :]).convert('RGB'))
+    plt.subplot(224)
+    plt.imshow(transforms.ToPILImage()(output2[:, :, :]).convert('RGB'))
     plt.show()
 
     if model.model_name == 'LinearVAE':
         for i, yi in enumerate(grid_x):
             for j, xi in enumerate(grid_y):
                 print(xi, yi)
-                z_sample = np.array([xi, yi] + list(z[2:]))
+                z_sample = np.array([xi, yi] + list(z1[2:]))
                 print(z_sample)
                 x_decoded = model.Decoder(torch.from_numpy(z_sample).float()).reshape([channel, 32, 32])
                 digit = x_decoded.detach().numpy().reshape(32, 32)
