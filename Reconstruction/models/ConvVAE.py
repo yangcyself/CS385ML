@@ -179,13 +179,13 @@ class ConvVAE(nn.Module):
         """
         self.load_state_dict(torch.load(path))
 
-    def save(self, name=None):
+    def save(self, dataset, name=None):
         """
         save model to given path with time as name
 
         """
         if name is None:
-            prefix = 'checkpoints/' + self.model_name + '_'
+            prefix = 'checkpoints/' + self.model_name + '_' + str(self.z_dim) + '_' + dataset + '_'
             name = time.strftime(prefix + '%m%d_%H:%M:%S.pth')
         torch.save(self.state_dict(), name)
         return name

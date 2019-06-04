@@ -12,7 +12,7 @@ class StanfordDog(data.Dataset):
     Loading StanfordDog dataset
 
     """
-    def __init__(self, root, transforms=None, train=True, already=False):
+    def __init__(self, root, transforms=None, train=True, size=32, already=False):
         """
         Initialization of the dataset
         root : place holder of the mnist dataset
@@ -20,6 +20,7 @@ class StanfordDog(data.Dataset):
         train / test : getting training set or testing set
 
         """
+        self.size = size
         if transforms is None:
             self.transforms = T.Compose([
                 T.ToTensor()
@@ -65,9 +66,15 @@ class StanfordDog(data.Dataset):
                     self.imgs.append(img[ymin:ymax, xmin:xmax])
                     self.labels.append(breed)
                     if breed in self.breed_dict.keys():
-                        self.breed_dict[breed].append(img[ymin:ymax, xmin:xmax])
+                        self.breed_dict[breed].append(list(img[ymin:ymax, xmin:xmax]))
                     else:
-                        self.breed_dict[breed] = [img[ymin:ymax, xmin:xmax]]
+                        self.breed_dict[breed] = [list(img[ymin:ymax, xmin:xmax])]
+
+    def getBreed(self, name):
+        if name in self.breed_dict.keys():
+            return self.breed_dict[name]
+        else:
+            raise ValueError("No such DOG")
 
     def save(self):
         with open("./dogs.pickle", 'wb') as save_data:
@@ -75,7 +82,7 @@ class StanfordDog(data.Dataset):
             pickle.dump(data_list, save_data)
 
     def __getitem__(self, index):
-        tmp = cv2.resize(self.imgs[index], (32, 32))
+        tmp = cv2.resize(self.imgs[index], (self.size, self.size))
         tmp = cv2.cvtColor(tmp, cv2.COLOR_BGR2RGB)
         img = Image.fromarray(tmp)
         img = self.transforms(img)
