@@ -3,3 +3,5 @@ Reconstruction/utils/__pycache__/*
 Reconstruction/__pycache__/*
 explanation/.ipynb_checkpoints/*
 Reconstruction/data/__pycache__/*
+Reconstruction/checkpoints/*.pth
+explanation/__pycache__/*
