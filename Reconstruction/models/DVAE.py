@@ -63,24 +63,25 @@ class Decoder(nn.Module):
         x = self.main(x)
         return x
 
-class LinearVAE(nn.Module):
+class DVAE(nn.Module):
     """
     Class VAE containing Encoder & Decoder using Linear layers
 
     """
-    def __init__(self, z_dim, hidden, num_channels):
+    def __init__(self, z_dim, hidden, num_channels, std=0.01):
         """
-        Initialization of VAE
+        Initialization of DVAE
 
         """
-        super(LinearVAE, self).__init__()
+        super(DVAE, self).__init__()
 
         self.Encoder = Encoder(z_dim, hidden, num_channels)
         self.Decoder = Decoder(z_dim, hidden, num_channels)
         self.z_dim = z_dim
-        self.model_name = "LinearVAE"
+        self.model_name = "DVAE"
         self.mu = None
         self.log_sigma = None
+        self.std = std
 
     def sample_from_q(self, mu, log_sigma):
         """
@@ -96,6 +97,7 @@ class LinearVAE(nn.Module):
         Definition of forward process
 
         """
+        x += Variable(torch.randn(x.size()) * self.std, requires_grad=False).type(torch.FloatTensor)
         self.mu, self.log_sigma = self.Encoder(x)
         z = self.sample_from_q(self.mu, self.log_sigma)
         return self.Decoder(z)

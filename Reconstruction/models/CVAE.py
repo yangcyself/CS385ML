@@ -11,7 +11,7 @@ class Encoder(nn.Module):
     Class Encoder
 
     """
-    def __init__(self, z_dim, hidden_size, num_channels):
+    def __init__(self, z_dim, hidden_size, num_channels, num_labels):
         """
         Initialization
         x -> Linear -> ReLU x 2 -> (mu, sigma) -> z
@@ -20,17 +20,33 @@ class Encoder(nn.Module):
         super(Encoder, self).__init__()
 
         self.main = nn.Sequential(
-                    nn.Linear(num_channels, hidden_size),
+                    nn.Linear(num_channels + num_labels, hidden_size),
                     nn.ReLU(True)
                     )
         self.mu_ = nn.Linear(hidden_size, z_dim)
         self.sigma_ = nn.Linear(hidden_size, z_dim)
 
-    def forward(self, x):
+    def idx2onehot(self, idx, n):
+        """
+        Convert a label to a one-hot vector
+
+        """
+        if idx.dim() == 1:
+            idx = idx.unsqueeze(1)
+
+        onehot = torch.zeros(idx.size(0), n)
+        onehot.scatter_(1, idx, 1)
+
+        return onehot
+
+    def forward(self, x, c):
         """
         Definition of forward process
 
         """
+        c = self.idx2onehot(c, n=10)
+        x = torch.cat((x, c), dim=-1)
+
         h = self.main(x)
         mu = self.mu_(h)
         sigma = self.sigma_(h)
@@ -42,7 +58,7 @@ class Decoder(nn.Module):
     Class Decoder
 
     """
-    def __init__(self, z_dim, hidden_size, num_channels):
+    def __init__(self, z_dim, hidden_size, num_channels, num_labels):
         """
         Initialization
         z -> Linear -> ReLU -> Linear -> Sigmoid -> x_hat
@@ -50,35 +66,51 @@ class Decoder(nn.Module):
         """
         super(Decoder, self).__init__()
         self.main = nn.Sequential(
-                    nn.Linear(z_dim, hidden_size),
+                    nn.Linear(z_dim + num_labels, hidden_size),
                     nn.ReLU(True),
                     nn.Linear(hidden_size, num_channels),
                     nn.Sigmoid()
                     )
-    def forward(self, x):
+
+    def idx2onehot(self, idx, n):
+        """
+        Convert a label to a one-hot vector
+
+        """
+        if idx.dim() == 1:
+            idx = idx.unsqueeze(1)
+
+        onehot = torch.zeros(idx.size(0), n)
+        onehot.scatter_(1, idx, 1)
+
+        return onehot
+
+    def forward(self, x, c):
         """
         Definition of forward process
 
         """
+        c = self.idx2onehot(c, n=10)
+        x = torch.cat((x, c), dim=-1)
         x = self.main(x)
         return x
 
-class LinearVAE(nn.Module):
+class CVAE(nn.Module):
     """
-    Class VAE containing Encoder & Decoder using Linear layers
+    Class Conditional-VAE containing Encoder & Decoder using Linear layers
 
     """
-    def __init__(self, z_dim, hidden, num_channels):
+    def __init__(self, z_dim, hidden, num_channels, num_labels):
         """
-        Initialization of VAE
+        Initialization of CVAE
 
         """
-        super(LinearVAE, self).__init__()
+        super(CVAE, self).__init__()
 
-        self.Encoder = Encoder(z_dim, hidden, num_channels)
-        self.Decoder = Decoder(z_dim, hidden, num_channels)
+        self.Encoder = Encoder(z_dim, hidden, num_channels, num_labels)
+        self.Decoder = Decoder(z_dim, hidden, num_channels, num_labels)
         self.z_dim = z_dim
-        self.model_name = "LinearVAE"
+        self.model_name = "CVAE"
         self.mu = None
         self.log_sigma = None
 
@@ -91,14 +123,14 @@ class LinearVAE(nn.Module):
         sigma = torch.exp(log_sigma / 2)
         return mu + sigma * epsilon
 
-    def forward(self, x):
+    def forward(self, x, c):
         """
         Definition of forward process
 
         """
-        self.mu, self.log_sigma = self.Encoder(x)
+        self.mu, self.log_sigma = self.Encoder(x, c)
         z = self.sample_from_q(self.mu, self.log_sigma)
-        return self.Decoder(z)
+        return self.Decoder(z, c)
 
     def load(self, path):
         """

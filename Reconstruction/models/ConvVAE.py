@@ -139,6 +139,8 @@ class ConvVAE(nn.Module):
         self.num_channels = num_channels
         self.std = std
         self.gpu_avaliable = torch.cuda.is_available()
+        self.mu = None
+        self.log_sigma = None
 
         self.model_name = "ConvVAE"
         self.Encoder = Encoder(c_dim, z_dim, num_channels, std)
