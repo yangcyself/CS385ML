@@ -111,8 +111,7 @@ class ConvSolver(Solver):
             if i < later:
                 continue
 
-            # if self.gpu_avaliable:
-            #    self.model.cpu()
+           
             start_time = time.time()
             dev_mse_loss = self.validate(valid_dataloader)
             if i % 10 == 0:
@@ -211,8 +210,8 @@ class LinearSolver(Solver):
             if i < later:
                 continue
 
-            if self.gpu_avaliable:
-                self.model.cpu()
+            #if self.gpu_avaliable:
+            #    self.model.cpu()
             start_time = time.time()
             dev_mse_loss = self.validate(valid_dataloader)
             if i % 10 == 0:
