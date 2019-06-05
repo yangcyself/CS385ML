@@ -2,6 +2,7 @@ import numpy as np
 import cv2
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
+from copy import deepcopy
 def BGR_RGB(img):
     new_img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     return new_img
@@ -28,3 +29,14 @@ def img_gradcam( gcam, raw_image, paper_cmap=False):
     # plt.imshow( BGR_RGB(np.uint8(gcam)))
     # plt.show()
     # cv2.imwrite(filename, np.uint8(gcam))
+
+def img_blockedArea(img, pos, size):
+    timg = deepcopy(img)
+    dim = 3 if len(img[0].shape) ==3 else 2
+    if(dim ==3):
+        for t, p in zip(timg,pos):
+            t[p[0]:p[0]+size[0],p[1]:p[1]+size[1],: ] = 0 # DOG
+    else:
+        for t, p in zip(timg,pos):
+            t[p[0]:p[0]+size[0],p[1]:p[1]+size[1]] = 0 # DOG
+    return timg
