@@ -70,6 +70,7 @@ class ConvSolver(Solver):
             losses = []
 
             for idx, (img, label) in enumerate(train_dataloader):
+                #print(img.data)
                 # print(img.shape)
                 if self.gpu_avaliable:
                     img = torch.autograd.Variable(img).cuda()
@@ -83,14 +84,16 @@ class ConvSolver(Solver):
                 output = self.model(img)
                 # print(output.shape)
                 batch_loss = self.loss_function(output.view_as(img), img)
-                # print(batch_loss)
+                #print(batch_loss)
+
                 if self.gpu_avaliable:
                     losses.append(batch_loss.detach().cpu().numpy())
                 else:
-                    losses.append(batch_loss.detach().cpu().numpy())
+                    losses.append(batch_loss.detach().numpy())
+                #print(losses)
                 batch_loss.backward()
                 self.optimizer.step()
-
+            #print("LOSSES:",losses)
             epoch_loss = np.mean(losses)
 
             print('Train:\tEpoch : {}\tTime : {}s\tMSELoss : {}'.format(i, time.time() - start_time, epoch_loss))
@@ -98,8 +101,7 @@ class ConvSolver(Solver):
             if i < later:
                 continue
 
-            #if self.gpu_avaliable:
-            #    self.model.cpu()
+           
             start_time = time.time()
             dev_mse_loss = self.validate(valid_dataloader)
             print('Evaluation:\tEpoch : {}\tTime : {}s\tMSELoss : {}'.format(i, time.time() - start_time, dev_mse_loss))
@@ -128,7 +130,7 @@ class LinearSolver(Solver):
         results = []
         for idx, (data, label) in enumerate(data_loader):
             # print(data.shape)
-            data = data.view(data.shape[0], num_channels, -1)
+            data = data.view(data.shape[0], data.shape[1], -1)
             output = self.model(data)
             loss = self.loss_function(output.view_as(data), data)
             results.append(loss.detach().numpy())
@@ -153,10 +155,10 @@ class LinearSolver(Solver):
             for idx, (img, label) in enumerate(train_dataloader):
                 # print(img.shape)
                 if self.gpu_avaliable:
-                    img = torch.autograd.Variable(img.view(img.shape[0], num_channels, -1)).cuda()
+                    img = torch.autograd.Variable(img.view(img.shape[0], img.shape[1], -1)).cuda()
                     # label = torch.autograd.Variable(label).cuda()
                 else:
-                    img = torch.autograd.Variable(img.view(img.shape[0], num_channels, -1))
+                    img = torch.autograd.Variable(img.view(img.shape[0], img.shape[1], -1))
                     # label = torch.autograd.Variable(label)
 
                 self.optimizer.zero_grad()
@@ -166,7 +168,7 @@ class LinearSolver(Solver):
                 if self.gpu_avaliable:
                     losses.append(batch_loss.detach().cpu().numpy())
                 else:
-                    losses.append(batch_loss.detach().cpu().numpy())
+                    losses.append(batch_loss.detach().numpy())
                 batch_loss.backward()
                 self.optimizer.step()
 

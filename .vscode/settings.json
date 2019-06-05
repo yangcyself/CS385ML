@@ -1,0 +1,11 @@
+{
+    "sshfs.configs": [
+        {
+            "host": "202.120.38.59",
+            "name": "Hexpod-CS385ml",
+            "password": "321hexpod",
+            "root": "/home/hexpodmlc/thankyou/CS385ML",
+            "username": "hexpodmlc"
+        }
+    ]
+}
