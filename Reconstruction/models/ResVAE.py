@@ -62,10 +62,10 @@ class ResidualBlockEnc(nn.Module):
         super(ResidualBlockEnc, self).__init__()
         self.left = nn.Sequential(
             nn.Conv2d(inchannel, outchannel, 3, stride, 1, bias=False),
-            nn.BatchNorm2d(outchannel),
+            nn.BatchNorm2d(outchannel, track_running_stats=False),
             nn.ReLU(inplace=True),
             nn.Conv2d(outchannel, outchannel, 3, 1, 1, bias=False),
-            nn.BatchNorm2d(outchannel))
+            nn.BatchNorm2d(outchannel, track_running_stats=False))
         self.right = shortcut
 
     def forward(self, x):
@@ -88,7 +88,7 @@ class Encoder(nn.Module):
         # b x 3 x 64 x 64
         self.pre = nn.Sequential(
             nn.Conv2d(num_channels, 64, 7, 2, 3, bias=False), # b x 64 x 32 x 32
-            nn.BatchNorm2d(64),
+            nn.BatchNorm2d(64, track_running_stats=False),
             nn.ReLU(inplace=True),
             nn.MaxPool2d(3, 2, 1)) # b x 64 x 16 x 16
 
@@ -280,6 +280,7 @@ class ResVAE(nn.Module):
         """
         self.mu, self.log_sigma = self.Encoder(x)
         z = self.sample_from_q(self.mu, self.log_sigma)
+        #print(z)
         return self.Decoder(z)
 
     def load(self, path):
