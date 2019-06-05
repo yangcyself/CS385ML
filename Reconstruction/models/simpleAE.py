@@ -74,8 +74,8 @@ class simpleAE(torch.nn.Module):
         Definition of forward process
 
         """
-        x = self.encoder(x)
-        x = self.decoder(x)
+        x = self.Encoder(x)
+        x = self.Decoder(x)
         return x
 
     def load(self, path):
@@ -85,13 +85,13 @@ class simpleAE(torch.nn.Module):
         """
         self.load_state_dict(torch.load(path))
 
-    def save(self, name=None):
+    def save(self, dataset, name=None):
         """
         save model to given path with time as name
 
         """
         if name is None:
-            prefix = 'checkpoints/' + self.model_name + '_'
+            prefix = 'checkpoints/' + self.model_name + '_' + dataset + '_'
             name = time.strftime(prefix + '%m%d_%H:%M:%S.pth')
         torch.save(self.state_dict(), name)
         return name

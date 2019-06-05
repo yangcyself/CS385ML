@@ -301,7 +301,7 @@ class ResVAE(nn.Module):
         return name
 
 if __name__ == '__main__':
-    model = Decoder()
-    a = np.zeros((1, 256))
+    model = ResVAE()
+    a = np.zeros((1, 3, 64, 64))
     a = torch.from_numpy(a).float()
-    print(model(a).shape)
+    print(model(a))
