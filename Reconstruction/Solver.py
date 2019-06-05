@@ -48,7 +48,10 @@ class ConvSolver(Solver):
             output = self.model(data)
             loss = self.loss_function(output.view_as(data), data)
             loss += self.latent_loss(self.model.mu, self.model.log_sigma)
-            results.append(loss.detach().numpy())
+            if self.gpu_avaliable:
+                results.append(loss.cpu().detach().numpy())
+            else:
+                results.append(loss.detach().numpy())
 
         mse_loss = np.mean(results)
         self.model.train()
@@ -76,6 +79,7 @@ class ConvSolver(Solver):
             losses = []
 
             for idx, (img, label) in enumerate(train_dataloader):
+                #print(img.data)
                 # print(img.shape)
                 if self.gpu_avaliable:
                     img = torch.autograd.Variable(img).cuda()
@@ -95,9 +99,10 @@ class ConvSolver(Solver):
                     losses.append(batch_loss.detach().cpu().numpy())
                 else:
                     losses.append(batch_loss.detach().numpy())
+                #print(losses)
                 batch_loss.backward()
                 self.optimizer.step()
-
+            #print("LOSSES:",losses)
             epoch_loss = np.mean(losses)
 
             if i % 10 == 0:
@@ -106,8 +111,8 @@ class ConvSolver(Solver):
             if i < later:
                 continue
 
-            if self.gpu_avaliable:
-                self.model.cpu()
+            # if self.gpu_avaliable:
+            #    self.model.cpu()
             start_time = time.time()
             dev_mse_loss = self.validate(valid_dataloader)
             if i % 10 == 0:
