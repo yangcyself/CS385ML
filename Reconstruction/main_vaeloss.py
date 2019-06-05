@@ -13,9 +13,11 @@ from Solver import LinearSolver, ConvSolver
 from models.simpleAE import simpleAE
 from models.LinearVAE import LinearVAE
 from models.ConvVAE import ConvVAE
+from models.ConvVAE_little import ConvVAE_little
 
 from torchvision.datasets import MNIST
 from scipy.stats import norm
+import time
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--model', type=str, default='simpleAE', help='Choosing model')
@@ -53,6 +55,8 @@ elif model_name.lower() == 'linearvae':
     model = LinearVAE(z_dim=hidden, hidden=512, num_channels=32*32*channel)
 elif model_name.lower() == 'convvae':
     model = ConvVAE(c_dim=update_code_dim(128, 32, 4), z_dim=128, num_channels=channel)
+elif model_name.lower() == 'convvae_little':
+    model = ConvVAE_little(c_dim=update_code_dim(128, 32, 2), z_dim=128, num_channels=channel)
 
 params = model.parameters()
 if optimizer.lower() == 'adam':
@@ -64,21 +68,23 @@ elif optimizer.lower() == 'rmsprop':
 
 print("---------Training Phase----------")
 vae = model.cuda().train()
-bce_loss = torch.nn.BCELoss(False)
+bce_loss = torch.nn.BCELoss()
 
 for epoch in range(max_epoch):
     if epoch >= 1:
         print("\n[%2.2f]" % (time.time() - t0), end="\n")
     t0 = time.time()
 
-    for step, (images, _) in enumerate(data_loader):
+    for step, (images, _) in enumerate(train_loader):
         if step >= 1:
             print("[%i] [%i] [%2.2f] [%2.2f]" % (epoch, step, time.time() - t1, (loss).data.cpu().numpy()), end="\r")
         t1 = time.time()
 
         batch_size = images.size(0)
 
-        x = Variable(images.type(torch.cuda.FloatTensor))
+        # x = torch.Variable(images.type(torch.cuda.FloatTensor))
+        if torch.cuda.is_available():
+            x = images.cuda()
         x_r = vae(x) # reconstruction
 
         loss_r = bce_loss(x_r, x) / batch_size
@@ -89,4 +95,4 @@ for epoch in range(max_epoch):
         optimizer.step()
         optimizer.zero_grad()
 
-    model.save()
+    model.save(dataset)
