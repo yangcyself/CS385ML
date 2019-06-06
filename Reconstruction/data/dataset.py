@@ -22,18 +22,16 @@ class StanfordDog(data.Dataset):
         """
         self.size = size
         self.cnt = 0
-        self.datapkl_path = root+"/dogs_{}.pickle".format("train" if train else "eval" )
+        self.datapkl_path = root+"/dogs_{}_r{}.pickle".format("train" if train else "eval" , self.size)
         if transforms is None:
             self.transforms = T.Compose([
                 T.ToTensor()
                 ])
-        if already:
+        if already and os.path.exists(path=self.datapkl_path):
             self.breed_dict = {}
             self.imgs = []
-
-            if os.path.exists(path=self.datapkl_path):
-                with open(self.datapkl_path, 'rb') as load_data:
-                    self.imgs, self.labels, self.breed_dict = pickle.load(load_data)
+            with open(self.datapkl_path, 'rb') as load_data:
+                self.imgs, self.labels, self.breed_dict = pickle.load(load_data)
         else:
             self.train = train
             self.breed_dict = {}
