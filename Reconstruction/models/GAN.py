@@ -16,6 +16,7 @@ import torch
 class Generator(nn.Module):
     def __init__(self, z_dim, img_shape):
         super(Generator, self).__init__()
+        self.model_name = 'Generator'
 
         def block(in_feat, out_feat, normalize=True):
             layers = [nn.Linear(in_feat, out_feat)]
@@ -39,10 +40,28 @@ class Generator(nn.Module):
         img = img.view(img.size(0), *self.img_shape)
         return img
 
+    def load(self, path):
+        """
+        load model from given path
+
+        """
+        self.load_state_dict(torch.load(path))
+
+    def save(self, dataset, name=None):
+        """
+        save model to given path with time as name
+
+        """
+        if name is None:
+            prefix = 'checkpoints/' + self.model_name + '_' + str(self.z_dim) + '_' + dataset + '_'
+            name = time.strftime(prefix + '%m%d_%H:%M:%S.pth')
+        torch.save(self.state_dict(), name)
+        return name
 
 class Discriminator(nn.Module):
     def __init__(self, img_shape):
         super(Discriminator, self).__init__()
+        self.model_name = 'Discriminator'
 
         self.model = nn.Sequential(
             nn.Linear(int(np.prod(img_shape)), 512),
@@ -58,3 +77,21 @@ class Discriminator(nn.Module):
         validity = self.model(img_flat)
 
         return validity
+
+    def load(self, path):
+        """
+        load model from given path
+
+        """
+        self.load_state_dict(torch.load(path))
+
+    def save(self, dataset, name=None):
+        """
+        save model to given path with time as name
+
+        """
+        if name is None:
+            prefix = 'checkpoints/' + self.model_name + '_' + str(self.z_dim) + '_' + dataset + '_'
+            name = time.strftime(prefix + '%m%d_%H:%M:%S.pth')
+        torch.save(self.state_dict(), name)
+        return name

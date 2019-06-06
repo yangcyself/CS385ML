@@ -27,6 +27,8 @@ class StanfordDog(data.Dataset):
             self.transforms = T.Compose([
                 T.ToTensor()
                 ])
+        else:
+            self.transforms = transforms
         if already and os.path.exists(path=self.datapkl_path):
             print("DATASET loaded :",self.datapkl_path)
             self.breed_dict = {}
@@ -70,13 +72,13 @@ class StanfordDog(data.Dataset):
                         self.breed_dict[breed] = self.cnt
                         self.cnt += 1
         img_num = len(self.imgs)
-        if self.train:
-            self.imgs = imgs[:int(0.7 * imgs_num)]
-        else:
-            self.imgs = imgs[int(0.7 * imgs_num):]
-
-        if autosave:
-            self.save()
+        # if self.train:
+        #     self.imgs = self.imgs[:int(0.7 * imgs_num)]
+        # else:
+        #     self.imgs = self.imgs[int(0.7 * imgs_num):]
+        #
+        # if autosave:
+        #     self.save()
 
     def save(self):
         with open(self.datapkl_path, 'wb') as save_data:

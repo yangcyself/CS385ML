@@ -6,131 +6,65 @@ from itertools import chain
 import numpy as np
 import time
 
-class Encoder(nn.Module):
-    """
-    Class Encoder
-
-    """
-    def __init__(self, z_dim, hidden_size, num_channels, num_labels):
-        """
-        Initialization
-        x -> Linear -> ReLU x 2 -> (mu, sigma) -> z
-
-        """
-        super(Encoder, self).__init__()
-
-        self.main = nn.Sequential(
-                    nn.Linear(num_channels + num_labels, hidden_size),
-                    nn.ReLU(True)
-                    )
-        self.mu_ = nn.Linear(hidden_size, z_dim)
-        self.sigma_ = nn.Linear(hidden_size, z_dim)
-
-    def idx2onehot(self, idx, n):
-        """
-        Convert a label to a one-hot vector
-
-        """
-        if idx.dim() == 1:
-            idx = idx.unsqueeze(1)
-
-        onehot = torch.zeros(idx.size(0), n)
-        onehot.scatter_(1, idx, 1)
-
-        return onehot
-
-    def forward(self, x, c):
-        """
-        Definition of forward process
-
-        """
-        c = self.idx2onehot(c, n=10)
-        x = torch.cat((x, c), dim=-1)
-
-        h = self.main(x)
-        mu = self.mu_(h)
-        sigma = self.sigma_(h)
-
-        return mu, sigma
-
-class Decoder(nn.Module):
-    """
-    Class Decoder
-
-    """
-    def __init__(self, z_dim, hidden_size, num_channels, num_labels):
-        """
-        Initialization
-        z -> Linear -> ReLU -> Linear -> Sigmoid -> x_hat
-
-        """
-        super(Decoder, self).__init__()
-        self.main = nn.Sequential(
-                    nn.Linear(z_dim + num_labels, hidden_size),
-                    nn.ReLU(True),
-                    nn.Linear(hidden_size, num_channels),
-                    nn.Sigmoid()
-                    )
-
-    def idx2onehot(self, idx, n):
-        """
-        Convert a label to a one-hot vector
-
-        """
-        if idx.dim() == 1:
-            idx = idx.unsqueeze(1)
-
-        onehot = torch.zeros(idx.size(0), n)
-        onehot.scatter_(1, idx, 1)
-
-        return onehot
-
-    def forward(self, x, c):
-        """
-        Definition of forward process
-
-        """
-        c = self.idx2onehot(c, n=10)
-        x = torch.cat((x, c), dim=-1)
-        x = self.main(x)
-        return x
-
 class CVAE(nn.Module):
     """
-    Class Conditional-VAE containing Encoder & Decoder using Linear layers
+    Class Conditional VAE
 
     """
-    def __init__(self, z_dim, hidden, num_channels, num_labels):
+    def __init__(self, encoder_layer_sizes, latent_size, decoder_layer_sizes,
+                 conditional=False, num_labels=0):
         """
-        Initialization of CVAE
+        Initialization
 
         """
-        super(CVAE, self).__init__()
+        super().__init__()
+        self.model_name = 'CVAE'
 
-        self.Encoder = Encoder(z_dim, hidden, num_channels, num_labels)
-        self.Decoder = Decoder(z_dim, hidden, num_channels, num_labels)
-        self.z_dim = z_dim
-        self.model_name = "CVAE"
-        self.mu = None
-        self.log_sigma = None
+        if conditional:
+            assert num_labels > 0
 
-    def sample_from_q(self, mu, log_sigma):
+        assert type(encoder_layer_sizes) == list
+        assert type(latent_size) == int
+        assert type(decoder_layer_sizes) == list
+
+        self.latent_size = latent_size
+
+        self.encoder = Encoder(
+            encoder_layer_sizes, latent_size, conditional, num_labels)
+        self.decoder = Decoder(
+            decoder_layer_sizes, latent_size, conditional, num_labels)
+
+    def forward(self, x, c=None):
         """
-        VAE sample from Normal(mu, sigma)
+        Forward process
 
         """
-        epsilon = Variable(torch.randn(mu.size()), requires_grad=False).type(torch.FloatTensor)
-        sigma = torch.exp(log_sigma / 2)
-        return mu + sigma * epsilon
+        if x.dim() > 2:
+            x = x.view(-1, 28*28)
 
-    def forward(self, x, c):
+        batch_size = x.size(0)
+
+        means, log_var = self.encoder(x, c)
+
+        std = torch.exp(0.5 * log_var)
+        eps = torch.randn([batch_size, self.latent_size])
+        z = eps * std + means
+
+        recon_x = self.decoder(z, c)
+
+        return recon_x, means, log_var, z
+
+    def inference(self, n=1, c=None):
         """
-        Definition of forward process
+        Inference some random noise feature to digits
 
         """
-        self.mu, self.log_sigma = self.Encoder(x, c)
-        z = self.sample_from_q(self.mu, self.log_sigma)
-        return self.Decoder(z, c)
+        batch_size = n
+        z = torch.randn([batch_size, self.latent_size])
+
+        recon_x = self.decoder(z, c)
+
+        return recon_x
 
     def load(self, path):
         """
@@ -149,3 +83,87 @@ class CVAE(nn.Module):
             name = time.strftime(prefix + '%m%d_%H:%M:%S.pth')
         torch.save(self.state_dict(), name)
         return name
+
+class Encoder(nn.Module):
+    """
+    Encoder class for CVAE
+
+    """
+    def __init__(self, layer_sizes, latent_size, conditional, num_labels):
+        """
+        Initialization
+
+        """
+        super().__init__()
+
+        self.conditional = conditional
+        if self.conditional:
+            layer_sizes[0] += num_labels
+
+        self.MLP = nn.Sequential()
+
+        for i, (in_size, out_size) in enumerate(zip(layer_sizes[:-1], layer_sizes[1:])):
+            self.MLP.add_module(
+                name="L{:d}".format(i), module=nn.Linear(in_size, out_size))
+            self.MLP.add_module(name="A{:d}".format(i), module=nn.ReLU())
+
+        self.linear_means = nn.Linear(layer_sizes[-1], latent_size)
+        self.linear_log_var = nn.Linear(layer_sizes[-1], latent_size)
+
+    def forward(self, x, c=None):
+        """
+        Forward process
+
+        """
+        if self.conditional:
+            c = idx2onehot(c, n=10)
+            x = torch.cat((x, c), dim=-1)
+
+        x = self.MLP(x)
+
+        means = self.linear_means(x)
+        log_vars = self.linear_log_var(x)
+
+        return means, log_vars
+
+
+class Decoder(nn.Module):
+    """
+    Decoder Class
+
+    """
+    def __init__(self, layer_sizes, latent_size, conditional, num_labels):
+        """
+        Initialization
+
+        """
+        super().__init__()
+
+        self.MLP = nn.Sequential()
+
+        self.conditional = conditional
+        if self.conditional:
+            input_size = latent_size + num_labels
+        else:
+            input_size = latent_size
+
+        for i, (in_size, out_size) in enumerate(zip([input_size]+layer_sizes[:-1], layer_sizes)):
+            self.MLP.add_module(
+                name="L{:d}".format(i), module=nn.Linear(in_size, out_size))
+            if i+1 < len(layer_sizes):
+                self.MLP.add_module(name="A{:d}".format(i), module=nn.ReLU())
+            else:
+                self.MLP.add_module(name="sigmoid", module=nn.Sigmoid())
+
+    def forward(self, z, c):
+        """
+        Forward Process
+
+        """
+        if self.conditional:
+            c = idx2onehot(c, n=10)
+            z = torch.cat((z, c), dim=-1)
+
+        x = self.MLP(z)
+
+        return x
