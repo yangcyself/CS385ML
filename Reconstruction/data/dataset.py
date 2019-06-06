@@ -41,44 +41,51 @@ class StanfordDog(data.Dataset):
             self.imgs = []
             self.name = []
             self.labels = []
-            annots = glob.glob(root + '/Annotation/*/*')
+            # annots = glob.glob(root + '/Annotation/*/*')
             # print(glob.glob(root + '/Annotation/*'))
             # print(annots[-1])
 
-            for annot in annots:
-                text = open(annot, 'r').read()
-                annot_list = annot.split('/')
-                rt = ET.fromstring(text)
-                children = rt.getchildren()
-                objects = children[5:]
+            # for annot in annots:
+            for bred_annot in os.listdir(os.path.join(root,"Annotation")):
+                bred_imgs = []
+                bred_labels = []
+                for annot_ in os.listdir(os.path.join(root,"Annotation",bred_annot)):
+                    annot = os.path.join(root,"Annotation",bred_annot,annot_)
+                    text = open(annot, 'r').read()
+                    annot_list = annot.split('/')
+                    rt = ET.fromstring(text)
+                    children = rt.getchildren()
+                    objects = children[5:]
 
-                for object in objects:
-                    objChildren = object.getchildren()
-                    breed = objChildren[0].text
+                    for object in objects:
+                        objChildren = object.getchildren()
+                        breed = objChildren[0].text
+                        img = cv2.imread(os.path.join(root , 'Images' , bred_annot  , annot_ + '.jpg'))
+                        self.name.append(os.path.join(root , 'Images' , bred_annot  , annot_ + '.jpg'))
+                        #print("Processing " + root + '/Images/' + annot_list[-2] + '/' + annot_list[-1] + '.jpg')
+                        xmin = int(objChildren[4].getchildren()[0].text)
+                        xmax = int(objChildren[4].getchildren()[2].text)
+                        ymin = int(objChildren[4].getchildren()[1].text)
+                        ymax = int(objChildren[4].getchildren()[3].text)
 
-                    img = cv2.imread(root + '/Images/' + annot_list[-2] + '/' + annot_list[-1] + '.jpg')
-                    self.name.append(root + '/Images/' + annot_list[-2] + '/' + annot_list[-1] + '.jpg')
-                    #print("Processing " + root + '/Images/' + annot_list[-2] + '/' + annot_list[-1] + '.jpg')
-                    xmin = int(objChildren[4].getchildren()[0].text)
-                    xmax = int(objChildren[4].getchildren()[2].text)
-                    ymin = int(objChildren[4].getchildren()[1].text)
-                    ymax = int(objChildren[4].getchildren()[3].text)
+                        # cv2.imshow("img", img[ymin:ymax, xmin:xmax])
+                        # cv2.waitKey(0)
+                        bred_imgs.append(img[ymin:ymax, xmin:xmax])
+                        bred_labels.append(breed)
+                        if breed not in self.breed_dict.keys():
+                            self.breed_dict[breed] = self.cnt
+                            self.cnt += 1
 
-                    # cv2.imshow("img", img[ymin:ymax, xmin:xmax])
-                    # cv2.waitKey(0)
-                    self.imgs.append(img[ymin:ymax, xmin:xmax])
-                    self.labels.append(breed)
-                    if breed not in self.breed_dict.keys():
-                        self.breed_dict[breed] = self.cnt
-                        self.cnt += 1
-        img_num = len(self.imgs)
-        # if self.train:
-        #     self.imgs = self.imgs[:int(0.7 * imgs_num)]
-        # else:
-        #     self.imgs = self.imgs[int(0.7 * imgs_num):]
-        #
-        # if autosave:
-        #     self.save()
+                img_num = len(bred_imgs)
+                if self.train:
+                    self.imgs += bred_imgs[:int(0.7 * img_num)]
+                    self.labels += bred_labels[:int(0.7 * img_num)]
+                else:
+                    self.imgs += bred_imgs[int(0.7 * img_num):]
+                    self.labels += bred_labels[int(0.7 * img_num):]
+
+        if autosave:
+            self.save()
 
     def save(self):
         with open(self.datapkl_path, 'wb') as save_data:
