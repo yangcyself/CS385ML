@@ -21,6 +21,7 @@ class Solver():
         self.optimizer = optimizer
 
         self.gpu_avaliable = torch.cuda.is_available()
+        print("CUDA avaliable:", self.gpu_avaliable)
 
 class ConvSolver(Solver):
     """

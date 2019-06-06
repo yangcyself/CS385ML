@@ -13,6 +13,7 @@ from Solver import LinearSolver, ConvSolver
 from models.simpleAE import simpleAE
 from models.LinearVAE import LinearVAE
 from models.ConvVAE import ConvVAE
+from models.ConvVAE_little import ConvVAE_little
 from models.CVAE import CVAE
 from models.DVAE import DVAE
 from models.GAN import Generator, Discriminator
@@ -23,7 +24,7 @@ from scipy.stats import norm
 parser = argparse.ArgumentParser()
 parser.add_argument('--model', type=str, default='simpleAE', help='Choosing model')
 parser.add_argument('--dataset', type=str, default='mnist', help='Choosing dataset')
-parser.add_argument('--learning_rate', type=float, default=1e-3, help='n-history')
+parser.add_argument('--learning_rate', type=float, default=0.3e-3, help='n-history')
 parser.add_argument('--hidden_size', type=int, default=128, help='hidden size')
 parser.add_argument('--batch_size', type=int, default=32, help='batch size')
 parser.add_argument('--max_epoch', type=int, default=100, help='max number of epochs to train for')
@@ -56,6 +57,8 @@ elif model_name.lower() == 'cvae':
     model = CVAE(z_dim=hidden, hidden=512, num_channels=32*32*channel, num_labels=10)
 elif model_name.lower() == 'dvae':
     model = DVAE(z_dim=hidden, hidden=512, num_channels=32*32*channel)
+elif model_name.lower() == 'convvae_little':
+    model = ConvVAE_little(c_dim=update_code_dim(128, 32, 2), z_dim=128, num_channels=channel)
 
 loss_function = select_loss_function(loss_func)
 
