@@ -8,3 +8,4 @@ explanation/__pycache__/*
 explanation/gradCam/__pycache__/*
 Reconstruction/checkpoints/*
 Reconstruction/data/__pycache__/*
+.vscode/*
