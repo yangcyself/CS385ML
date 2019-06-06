@@ -19,8 +19,8 @@ from torchvision.datasets import MNIST
 
 
 from models.littleConv import littleConv
-
-os.path.append('../Reconstruction')
+import sys
+sys.path.append('../Reconstruction')
 from  utils.get_cdim import update_code_dim
 from data.dataset import StanfordDog
 
@@ -91,8 +91,8 @@ def main():
     # val_loader = dataset.test_loader(args.test_path,batch_size = args.batch_size)
     ################# USE STANFORD DOGS ########################
     channel_num = 3
-    train_loader = torch.utils.data.DataLoader(dataset=StanfordDog(root='~/dataset/standfordDogs/', train=True), batch_size=args.batch_size, shuffle=True)
-    val_loader = torch.utils.data.DataLoader(dataset=StanfordDog(root='~/dataset/standfordDogs/', train=False), batch_size=args.batch_size, shuffle=True)
+    train_loader = torch.utils.data.DataLoader(dataset=StanfordDog(root='../Reconstruction/data/', train=True, already = True), batch_size=args.batch_size, shuffle=True)
+    val_loader = torch.utils.data.DataLoader(dataset=StanfordDog(root='../Reconstruction/data/', train=False,  already = True), batch_size=args.batch_size, shuffle=True)
     ################# Tiny Image Net ########################
     # channel_num = 3
     # train_loader = torch.utils.data.DataLoader(dataset=TinyImageNet('/home/ycy/dataset/tiny-imagenet-200/', train=True), batch_size=args.batch_size, shuffle=True)
@@ -102,7 +102,7 @@ def main():
     #model = pipeNet(100).cuda() # The Second argument of pipenet Changes Channel Wise DS rate
     # model = cdsresnext50(inputChannels = channel_num, dsProbability = 0.75).cuda()
     # model = resnext50(inputChannels = 1).cuda()
-    model = littleConv(c_dim=update_code_dim(128, 32, 4), z_dim=200 ,channel_num = channel_num)
+    model = littleConv(c_dim=update_code_dim(128, 32, 4), z_dim=200 ,num_channels = channel_num)
 
     criterion = nn.CrossEntropyLoss().cuda()
     optimizer = torch.optim.SGD(model.parameters(),

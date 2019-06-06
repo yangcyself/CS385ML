@@ -21,6 +21,7 @@ class StanfordDog(data.Dataset):
 
         """
         self.size = size
+        self.datapkl_path = root+"/dogs_{}.pickle".format("train" if train else "eval" )
         if transforms is None:
             self.transforms = T.Compose([
                 T.ToTensor()
@@ -28,11 +29,12 @@ class StanfordDog(data.Dataset):
         if already:
             self.breed_dict = {}
             self.imgs = []
-            if os.path.exists(path=root+"/dogs.pickle"):
-                with open(root+"/dogs.pickle", 'rb') as load_data:
+            
+            if os.path.exists(path=self.datapkl_path):
+                with open(self.datapkl_path, 'rb') as load_data:
                     self.imgs, self.labels = pickle.load(load_data)
-            for img, label in zip(self.imgs, self.labels):
-                self.breed_dict[label] = img
+                for img, label in zip(self.imgs, self.labels):
+                    self.breed_dict[label] = img
         else:
             self.train = train
             self.breed_dict = {}
@@ -69,6 +71,7 @@ class StanfordDog(data.Dataset):
                         self.breed_dict[breed].append(list(img[ymin:ymax, xmin:xmax]))
                     else:
                         self.breed_dict[breed] = [list(img[ymin:ymax, xmin:xmax])]
+            self.save()
 
     def getBreed(self, name):
         if name in self.breed_dict.keys():
@@ -77,7 +80,7 @@ class StanfordDog(data.Dataset):
             raise ValueError("No such DOG")
 
     def save(self):
-        with open("./dogs.pickle", 'wb') as save_data:
+        with open(self.datapkl_path, 'wb') as save_data:
             data_list = [self.imgs, self.labels]
             pickle.dump(data_list, save_data)
 
@@ -92,5 +95,7 @@ class StanfordDog(data.Dataset):
         return len(self.imgs)
 
 if __name__=='__main__':
-    sd = StanfordDog('.', '.')
+    curfilePath = os.path.abspath(__file__)
+    curDir = os.path.abspath(os.path.join(curfilePath, os.pardir))
+    sd = StanfordDog(curDir)
     sd.save()
