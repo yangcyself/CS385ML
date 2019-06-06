@@ -47,7 +47,7 @@ parser.add_argument('--momentum', default=0.9, type=float, metavar='M',
                     help='momentum')
 parser.add_argument('--weight-decay', '--wd', default=1e-4, type=float,
                     metavar='W', help='weight decay (default: 1e-4)')
-parser.add_argument('--print-freq', '-p', default=10, type=int,
+parser.add_argument('--print-freq', '-p', default=400, type=int,
                     metavar='N', help='print frequency (default: 10)')
 parser.add_argument('--resume', default='', type=str, metavar='PATH',
                     help='path to latest checkpoint (default: none)')
@@ -127,19 +127,21 @@ def main():
     if(args.evaluate):
         validate(train_loader,val_loader,model,criterion,None,None)
     else:
-        main_train(args,optimizer,train_loader,model,criterion)
-def main_train(args,optimizer,train_loader,model,criterion):
+        main_train(args,optimizer,train_loader,val_loader,model,criterion)
+def main_train(args,optimizer,train_loader,val_loader,model,criterion):
+    special_epochs = [1,3,5,7,9,11,13]
     for epoch in range(args.start_epoch, args.epochs):
         adjust_learning_rate(optimizer, epoch)
 
         # train for one epoch
         train(train_loader, model, criterion, optimizer, epoch)
-
-        save_checkpoint({
-            'epoch': epoch + 1,
-            'state_dict': model.state_dict(),
-            'optimizer' : optimizer.state_dict(),
-        })
+        validate(train_loader,val_loader,model,criterion)
+        if(epoch in special_epochs):
+            save_checkpoint({
+                'epoch': epoch + 1,
+                'state_dict': model.state_dict(),
+                'optimizer' : optimizer.state_dict(),
+            },"littleConv_epoch%d_ckpt.pth.tar")
 
 def save_checkpoint(state, filename='{}_{}.checkpoint.pth.tar'.format("little",args.message)):
     torch.save(state, filename)
