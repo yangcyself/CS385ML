@@ -48,7 +48,7 @@ class ConvSolver(Solver):
                 data = data.cuda()
             output = self.model(data)
             loss = self.loss_function(output.view_as(data), data)
-            loss += self.latent_loss(self.model.mu, self.model.log_sigma)
+            # loss += self.latent_loss(self.model.mu, self.model.log_sigma)
             if self.gpu_avaliable:
                 results.append(loss.cpu().detach().numpy())
             else:
@@ -94,8 +94,8 @@ class ConvSolver(Solver):
                 output = self.model(img)
                 # print(output.shape)
                 loss_1 = self.loss_function(output.view_as(img), img)
-                loss_kl = self.latent_loss(self.model.mu, self.model.log_sigma)
-                batch_loss = loss_1 + loss_kl
+                # loss_kl = self.latent_loss(self.model.mu, self.model.log_sigma)
+                batch_loss = loss_1 #+ loss_kl
                 if self.gpu_avaliable:
                     losses.append(batch_loss.detach().cpu().numpy())
                 else:
@@ -151,6 +151,7 @@ class LinearSolver(Solver):
                 output = self.model(data, label)
             loss = self.loss_function(output.view_as(data), data)
             loss += self.latent_loss(self.model.mu, self.model.log_sigma)
+            loss /= data.size(0)
             results.append(loss.detach().numpy())
 
         mse_loss = np.mean(results)
@@ -164,7 +165,7 @@ class LinearSolver(Solver):
         """
         mean_sq = z_mean * z_mean
 
-        return 0.5 * torch.mean(mean_sq - log_sigma + torch.exp(log_sigma) - 1)
+        return 0.5 * torch.sum(mean_sq - log_sigma + torch.exp(log_sigma) - 1)
 
     def train_and_decode(self, train_dataloader, valid_dataloader,
                          test_dataloader, max_epoch=100, later=0):
@@ -195,6 +196,7 @@ class LinearSolver(Solver):
                 loss_1 = self.loss_function(output.view_as(img), img)
                 loss_kl = self.latent_loss(self.model.mu, self.model.log_sigma)
                 batch_loss = loss_1 + loss_kl
+                batch_loss = batch_loss / img.size(0)
                 # print(batch_loss)
                 if self.gpu_avaliable:
                     losses.append(batch_loss.detach().cpu().numpy())
