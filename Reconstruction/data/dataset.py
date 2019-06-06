@@ -47,7 +47,8 @@ class StanfordDog(data.Dataset):
             for bred_annot in os.listdir(os.path.join(root,"Annotation")):
                 bred_imgs = []
                 bred_labels = []
-                for annot in os.listdir(os.path.join(root,"Annotation",bred_annot)):
+                for annot_ in os.listdir(os.path.join(root,"Annotation",bred_annot)):
+                    annot = os.path.join(root,"Annotation",bred_annot,annot_)
                     text = open(annot, 'r').read()
                     annot_list = annot.split('/')
                     rt = ET.fromstring(text)
@@ -57,9 +58,8 @@ class StanfordDog(data.Dataset):
                     for object in objects:
                         objChildren = object.getchildren()
                         breed = objChildren[0].text
-
-                        img = cv2.imread(os.path.join(root , 'Images' , bred_annot  , annot + '.jpg')
-                        self.name.append(os.path.join(root , 'Images' , bred_annot  , annot + '.jpg')
+                        img = cv2.imread(os.path.join(root , 'Images' , bred_annot  , annot_ + '.jpg'))
+                        self.name.append(os.path.join(root , 'Images' , bred_annot  , annot_ + '.jpg'))
                         #print("Processing " + root + '/Images/' + annot_list[-2] + '/' + annot_list[-1] + '.jpg')
                         xmin = int(objChildren[4].getchildren()[0].text)
                         xmax = int(objChildren[4].getchildren()[2].text)
