@@ -111,7 +111,7 @@ class ConvSolver(Solver):
             if i < later:
                 continue
 
-           
+
             start_time = time.time()
             dev_mse_loss = self.validate(valid_dataloader)
             if i % 10 == 0:

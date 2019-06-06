@@ -21,6 +21,7 @@ class StanfordDog(data.Dataset):
 
         """
         self.size = size
+        self.cnt = 0
         if transforms is None:
             self.transforms = T.Compose([
                 T.ToTensor()
@@ -40,7 +41,8 @@ class StanfordDog(data.Dataset):
             self.name = []
             self.labels = []
             annots = glob.glob(root + '/Annotation/*/*')
-            print(annots[-1])
+            print(glob.glob(root + '/Annotation/*'))
+            # print(annots[-1])
 
             for annot in annots:
                 text = open(annot, 'r').read()
@@ -65,16 +67,9 @@ class StanfordDog(data.Dataset):
                     # cv2.waitKey(0)
                     self.imgs.append(img[ymin:ymax, xmin:xmax])
                     self.labels.append(breed)
-                    if breed in self.breed_dict.keys():
-                        self.breed_dict[breed].append(list(img[ymin:ymax, xmin:xmax]))
-                    else:
-                        self.breed_dict[breed] = [list(img[ymin:ymax, xmin:xmax])]
-
-    def getBreed(self, name):
-        if name in self.breed_dict.keys():
-            return self.breed_dict[name]
-        else:
-            raise ValueError("No such DOG")
+                    if breed not in self.breed_dict.keys():
+                        self.breed_dict[breed] = self.cnt
+                        self.cnt += 1
 
     def save(self):
         with open("./dogs.pickle", 'wb') as save_data:
@@ -86,11 +81,11 @@ class StanfordDog(data.Dataset):
         tmp = cv2.cvtColor(tmp, cv2.COLOR_BGR2RGB)
         img = Image.fromarray(tmp)
         img = self.transforms(img)
-        return img, self.labels[index]
+        return img, self.breed_dict[self.labels]
 
     def __len__(self):
         return len(self.imgs)
 
 if __name__=='__main__':
     sd = StanfordDog('.', '.')
-    sd.save()
+    # sd.save()
