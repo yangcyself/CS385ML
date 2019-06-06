@@ -15,58 +15,16 @@ import torch.utils.data.distributed
 import torchvision.transforms as transforms
 import torchvision.datasets as datasets
 from torch.utils.data.sampler import SubsetRandomSampler
-from models.little import pipeNet
-from models.cdsResnext import cdsresnext50
-# from models.resnext import resnext50
 from torchvision.datasets import MNIST
-import utils.flops as flops
-from utils.dataset import  TinyImageNet
 
 
-# class DataSet:
-#     def __init__(self, torch_v=0.4):
-#         self.torch_v = torch_v
+from models.littleConv import littleConv
 
-#     def loader(self, path, batch_size=32, num_workers=4, pin_memory=True,valid_size=0.1):
-#         '''normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])'''
-#         normalize = transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
-#         if self.torch_v == 0.3:
-#             resize = transforms.RandomSizedCrop(224)
-#         else:
-#             resize = transforms.RandomResizedCrop(224)
+os.path.append('../Reconstruction')
+from  utils.get_cdim import update_code_dim
+from data.dataset import StanfordDog
 
-#         traindata_transforms = transforms.Compose([
-#             resize,
-#             transforms.RandomHorizontalFlip(),
-#             transforms.ToTensor(),
-#             normalize])
 
-#         return data.DataLoader(
-#                 dataset=datasets.CIFAR100(root=path, train=True, download=True, transform=traindata_transforms),
-#                 batch_size=batch_size,
-#                 shuffle=True,
-#                 num_workers=num_workers,
-#                 pin_memory=pin_memory)
-            
-
-#     def test_loader(self, path, batch_size=32, num_workers=4, pin_memory=True):
-#         '''normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])'''
-#         normalize = transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
-#         if self.torch_v == 0.3:
-#             resize = transforms.Scale(256)
-#         else:
-#             resize = transforms.Resize(256)
-#         testdata_transforms = transforms.Compose([
-#             resize,
-#             transforms.CenterCrop(224),
-#             transforms.ToTensor(),
-#             normalize])
-#         return data.DataLoader(
-#             dataset=datasets.CIFAR100(root=path, train=False, download=True, transform=testdata_transforms),
-#             batch_size=batch_size,
-#             shuffle=False,
-#             num_workers=num_workers,
-#             pin_memory=pin_memory)
 QUICK = False
 
 parser = argparse.ArgumentParser(description='PyTorch ImageNet Training - Stochastic Downsampling')
@@ -132,19 +90,20 @@ def main():
     # train_loader = dataset.loader(args.train_path,batch_size = args.batch_size)
     # val_loader = dataset.test_loader(args.test_path,batch_size = args.batch_size)
     ################# USE STANFORD DOGS ########################
-    # channel_num = 3
-    # train_loader = torch.utils.data.DataLoader(dataset=StanfordDog(root='~/dataset/standfordDogs/', train=True), batch_size=args.batch_size, shuffle=True)
-    # val_loader = torch.utils.data.DataLoader(dataset=StanfordDog(root='~/dataset/standfordDogs/', train=False), batch_size=args.batch_size, shuffle=True)
-    ################# Tiny Image Net ########################
     channel_num = 3
-    train_loader = torch.utils.data.DataLoader(dataset=TinyImageNet('/home/ycy/dataset/tiny-imagenet-200/', train=True), batch_size=args.batch_size, shuffle=True)
-    val_loader = torch.utils.data.DataLoader(dataset=TinyImageNet('/home/ycy/dataset/tiny-imagenet-200/', train=False), batch_size=args.batch_size, shuffle=True)
-
+    train_loader = torch.utils.data.DataLoader(dataset=StanfordDog(root='~/dataset/standfordDogs/', train=True), batch_size=args.batch_size, shuffle=True)
+    val_loader = torch.utils.data.DataLoader(dataset=StanfordDog(root='~/dataset/standfordDogs/', train=False), batch_size=args.batch_size, shuffle=True)
+    ################# Tiny Image Net ########################
+    # channel_num = 3
+    # train_loader = torch.utils.data.DataLoader(dataset=TinyImageNet('/home/ycy/dataset/tiny-imagenet-200/', train=True), batch_size=args.batch_size, shuffle=True)
+    # val_loader = torch.utils.data.DataLoader(dataset=TinyImageNet('/home/ycy/dataset/tiny-imagenet-200/', train=False), batch_size=args.batch_size, shuffle=True)
 
 
     #model = pipeNet(100).cuda() # The Second argument of pipenet Changes Channel Wise DS rate
-    model = cdsresnext50(inputChannels = channel_num, dsProbability = 0.75).cuda()
+    # model = cdsresnext50(inputChannels = channel_num, dsProbability = 0.75).cuda()
     # model = resnext50(inputChannels = 1).cuda()
+    model = littleConv(c_dim=update_code_dim(128, 32, 4), z_dim=200 ,channel_num = channel_num)
+
     criterion = nn.CrossEntropyLoss().cuda()
     optimizer = torch.optim.SGD(model.parameters(),
                                 args.lr, momentum=args.momentum,

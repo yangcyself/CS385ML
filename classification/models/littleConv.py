@@ -11,7 +11,7 @@ class littleConv(torch.nn.Module):
     Class encoder
 
     """
-    def __init__(self, c_dim, z_dim=256, num_channels=1, std=0.02):
+    def __init__(self, c_dim, z_dim=200, num_channels=1, std=0.02):
         """
         Initialization
         conv -> ReLU x 4 -> (mu, sigma)
@@ -37,8 +37,7 @@ class littleConv(torch.nn.Module):
         self.z_dim = z_dim
         self.num_channels = num_channels
         self.std = std
-        self.linear_mu = nn.Linear(int(np.prod(c_dim)), z_dim)
-        self.sigma = nn.Linear(int(np.prod(c_dim)), z_dim)
+        self.linear= nn.Linear(int(np.prod(c_dim)), z_dim)
         self.init_weights()
 
     def init_weights(self):
@@ -63,7 +62,7 @@ class littleConv(torch.nn.Module):
         """
         h = self.main(input)
         h = h.resize(h.size(0), h.size(1) * h.size(2) * h.size(3))
-        return self.linear_mu(h), self.sigma(h)
+        return self.linear(h)
 
 
 # class littleConv(nn.Module):
