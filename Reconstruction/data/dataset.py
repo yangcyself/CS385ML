@@ -72,6 +72,11 @@ class StanfordDog(data.Dataset):
                     if breed not in self.breed_dict.keys():
                         self.breed_dict[breed] = self.cnt
                         self.cnt += 1
+        img_num = len(self.imgs)
+        if self.train:
+            self.imgs = imgs[:int(0.7 * imgs_num)]
+        else:
+            self.imgs = imgs[int(0.7 * imgs_num):]
 
     def save(self):
         with open(self.datapkl_path, 'wb') as save_data:

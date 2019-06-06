@@ -254,8 +254,9 @@ if __name__ == '__main__':
     parser.add_argument("--latent_size", type=int, default=2)
     parser.add_argument("--print_every", type=int, default=100)
     parser.add_argument("--fig_root", type=str, default='figs')
-    parser.add_argument("--conditional", action='store_true')
+    parser.add_argument("--conditional", action='store_true', default=True)
 
     args = parser.parse_args()
+    # print(args.conditional)
 
     main(args)
