@@ -33,9 +33,7 @@ class StanfordDog(data.Dataset):
 
             if os.path.exists(path=self.datapkl_path):
                 with open(self.datapkl_path, 'rb') as load_data:
-                    self.imgs, self.labels = pickle.load(load_data)
-                for img, label in zip(self.imgs, self.labels):
-                    self.breed_dict[label] = img
+                    self.imgs, self.labels, self.breed_dict = pickle.load(load_data)
         else:
             self.train = train
             self.breed_dict = {}
@@ -43,7 +41,7 @@ class StanfordDog(data.Dataset):
             self.name = []
             self.labels = []
             annots = glob.glob(root + '/Annotation/*/*')
-            print(glob.glob(root + '/Annotation/*'))
+            # print(glob.glob(root + '/Annotation/*'))
             # print(annots[-1])
 
             for annot in annots:
@@ -75,7 +73,7 @@ class StanfordDog(data.Dataset):
 
     def save(self):
         with open(self.datapkl_path, 'wb') as save_data:
-            data_list = [self.imgs, self.labels]
+            data_list = [self.imgs, self.labels, self.breed_dict]
             pickle.dump(data_list, save_data)
 
     def __getitem__(self, index):
@@ -83,7 +81,9 @@ class StanfordDog(data.Dataset):
         tmp = cv2.cvtColor(tmp, cv2.COLOR_BGR2RGB)
         img = Image.fromarray(tmp)
         img = self.transforms(img)
-        return img, self.breed_dict[self.labels]
+        # print(self.breed_dict[self.labels[index]] )
+        return img, self.breed_dict[self.labels[index]]
+        # return img,self.labels[index]
 
     def __len__(self):
         return len(self.imgs)
