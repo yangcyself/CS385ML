@@ -135,7 +135,7 @@ def main_train(args,optimizer,train_loader,val_loader,model,criterion):
 
         # train for one epoch
         train(train_loader, model, criterion, optimizer, epoch)
-        validate(train_loader,val_loader,model,criterion)
+        validate(train_loader,val_loader,model,criterion,None,None)
         if(epoch in special_epochs):
             save_checkpoint({
                 'epoch': epoch + 1,
