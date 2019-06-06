@@ -12,7 +12,7 @@ class StanfordDog(data.Dataset):
     Loading StanfordDog dataset
 
     """
-    def __init__(self, root, transforms=None, train=True, size=32, already=False):
+    def __init__(self, root, transforms=None, train=True, size=32, already=False, autosave = True):
         """
         Initialization of the dataset
         root : place holder of the mnist dataset
@@ -22,20 +22,17 @@ class StanfordDog(data.Dataset):
         """
         self.size = size
         self.cnt = 0
-        self.datapkl_path = root+"/dogs_{}.pickle".format("train" if train else "eval" )
+        self.datapkl_path = root+"/dogs_{}_r{}.pickle".format("train" if train else "eval" , self.size)
         if transforms is None:
             self.transforms = T.Compose([
                 T.ToTensor()
                 ])
-        if already:
+        if already and os.path.exists(path=self.datapkl_path):
+            print("DATASET loaded :",self.datapkl_path)
             self.breed_dict = {}
             self.imgs = []
-
-            if os.path.exists(path=self.datapkl_path):
-                with open(self.datapkl_path, 'rb') as load_data:
-                    self.imgs, self.labels = pickle.load(load_data)
-                for img, label in zip(self.imgs, self.labels):
-                    self.breed_dict[label] = img
+            with open(self.datapkl_path, 'rb') as load_data:
+                self.imgs, self.labels, self.breed_dict = pickle.load(load_data)
         else:
             self.train = train
             self.breed_dict = {}
@@ -43,7 +40,7 @@ class StanfordDog(data.Dataset):
             self.name = []
             self.labels = []
             annots = glob.glob(root + '/Annotation/*/*')
-            print(glob.glob(root + '/Annotation/*'))
+            # print(glob.glob(root + '/Annotation/*'))
             # print(annots[-1])
 
             for annot in annots:
@@ -78,9 +75,12 @@ class StanfordDog(data.Dataset):
         else:
             self.imgs = imgs[int(0.7 * imgs_num):]
 
+        if autosave:
+            self.save()
+
     def save(self):
         with open(self.datapkl_path, 'wb') as save_data:
-            data_list = [self.imgs, self.labels]
+            data_list = [self.imgs, self.labels, self.breed_dict]
             pickle.dump(data_list, save_data)
 
     def __getitem__(self, index):
@@ -88,7 +88,9 @@ class StanfordDog(data.Dataset):
         tmp = cv2.cvtColor(tmp, cv2.COLOR_BGR2RGB)
         img = Image.fromarray(tmp)
         img = self.transforms(img)
-        return img, self.breed_dict[self.labels]
+        # print(self.breed_dict[self.labels[index]] )
+        return img, self.breed_dict[self.labels[index]]
+        # return img,self.labels[index]
 
     def __len__(self):
         return len(self.imgs)
