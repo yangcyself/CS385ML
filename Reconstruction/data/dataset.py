@@ -28,6 +28,7 @@ class StanfordDog(data.Dataset):
                 T.ToTensor()
                 ])
         if already and os.path.exists(path=self.datapkl_path):
+            print("DATASET loaded :",self.datapkl_path)
             self.breed_dict = {}
             self.imgs = []
             with open(self.datapkl_path, 'rb') as load_data:
