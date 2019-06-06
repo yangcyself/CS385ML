@@ -91,8 +91,8 @@ def main():
     # val_loader = dataset.test_loader(args.test_path,batch_size = args.batch_size)
     ################# USE STANFORD DOGS ########################
     channel_num = 3
-    train_loader = torch.utils.data.DataLoader(dataset=StanfordDog(root='../Reconstruction/data/', train=True, already = True), batch_size=args.batch_size, shuffle=True)
-    val_loader = torch.utils.data.DataLoader(dataset=StanfordDog(root='../Reconstruction/data/', train=False,  already = True), batch_size=args.batch_size, shuffle=True)
+    train_loader = torch.utils.data.DataLoader(dataset=StanfordDog(root='../Reconstruction/data/', train=True, already = False), batch_size=args.batch_size, shuffle=True)
+    val_loader = torch.utils.data.DataLoader(dataset=StanfordDog(root='../Reconstruction/data/', train=True,  already = False), batch_size=args.batch_size, shuffle=True)
     ################# Tiny Image Net ########################
     # channel_num = 3
     # train_loader = torch.utils.data.DataLoader(dataset=TinyImageNet('/home/ycy/dataset/tiny-imagenet-200/', train=True), batch_size=args.batch_size, shuffle=True)
@@ -103,7 +103,7 @@ def main():
     # model = cdsresnext50(inputChannels = channel_num, dsProbability = 0.75).cuda()
     # model = resnext50(inputChannels = 1).cuda()
     model = littleConv(c_dim=update_code_dim(128, 32, 4), z_dim=200 ,num_channels = channel_num)
-
+    model = model.cuda()
     criterion = nn.CrossEntropyLoss().cuda()
     optimizer = torch.optim.SGD(model.parameters(),
                                 args.lr, momentum=args.momentum,
