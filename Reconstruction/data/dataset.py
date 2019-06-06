@@ -12,7 +12,7 @@ class StanfordDog(data.Dataset):
     Loading StanfordDog dataset
 
     """
-    def __init__(self, root, transforms=None, train=True, size=32, already=False):
+    def __init__(self, root, transforms=None, train=True, size=32, already=False, autosave = True):
         """
         Initialization of the dataset
         root : place holder of the mnist dataset
@@ -70,6 +70,8 @@ class StanfordDog(data.Dataset):
                     if breed not in self.breed_dict.keys():
                         self.breed_dict[breed] = self.cnt
                         self.cnt += 1
+        if autosave:
+            self.save()
 
     def save(self):
         with open(self.datapkl_path, 'wb') as save_data:
