@@ -7,12 +7,21 @@ def BGR_RGB(img):
     new_img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     return new_img
 
+def cvt255(img):
+    img -= img.min()
+    img /= img.max()
+    img *= 255.0
+    return np.uint8(img)
+
+def img_out(out):
+    out = out.cpu().detach().numpy().transpose(1,2,0)
+    out - cvt255(out)
+    return BGR_RGB(out)
+
 def img_gradient( gradient):
     gradient = gradient.cpu().numpy().transpose(1, 2, 0)
-    gradient -= gradient.min()
-    gradient /= gradient.max()
-    gradient *= 255.0
-    return  BGR_RGB(np.uint8(gradient))
+    gradient = cvt255(gradient)
+    return  BGR_RGB(gradient)
     # plt.imshow( BGR_RGB(np.uint8(gradient)))
     # plt.show()
     # cv2.imwrite(filename, np.uint8(gradient))
