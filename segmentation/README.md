@@ -1,11 +1,13 @@
 # Image Segmentation Report
 
-This reporsitory explore **Fully Convolutional Neural Networks(FCN)** for sementatic segmentaion. We adjust several famous network structures for FCN encoder, they are mainly [alexnet](), [vgg16](), [resnet50](). For each network structure, we arrange 2 kind of FCN decoders for it. So There is totally 6 network structures for FCN.
+This reporsitory explore **Fully Convolutional Neural Networks(FCN)** for sementatic segmentaion. We adjust several famous network structures for FCN.
 
 ## Structures
-Generally speaking, FCN transforms the fully connected layers in traditional CNN into convolution layer. Then it add the Deconvlutional layers in the 
-
+Generally, FCN is considered as a combination of encoders and decoders. The encoders is adjusted by traditional CNNs, where FCN transforms the fully connected layers into convolutional layers. For The decoder, it combines the feature maps of the last layer and some middle layers of the encoder and restore them to the same size of the input image, so as to generate a prediction for each pixel and retain the spatial information in the original input image.
+![from https://blog.csdn.net/qq_36269513/article/details/80420363](https://img-blog.csdn.net/20160508234037674)
+Based on some previous works of other people, we explored several structures of FCN. For the encoder, we explored **alexnet, vgg16,** and **resnet50**
 The detailed structures is in the following list
+
 | Encoder | decoder | structure |
 | ---- | ---- | ---- |
 | alexnet | fcn_8 | [fcn_8_alexnet]()|
