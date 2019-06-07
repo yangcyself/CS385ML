@@ -43,7 +43,7 @@ for resnet, we didn't manage to finish the training because it requires way too 
 | resnet50 | FCN_8 | 74.42 | 47.42 | 33.89 |
 | resnet101 | FCN_8 | 75.56 | 50.11 | 35.76 |
 ## Visualization
-raw image----------image labels----------fcn_8_alexnet----------fcn_32_alexnet----------fcn_8_vgg----------fcn_32_vgg
+----------raw image--------image labels--------fcn_8_alexnet--------fcn_32_alexnet--------fcn_8_vgg--------fcn_32_vgg
 
 <div align="center">
     <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/sample_images/Black_Footed_Albatross_0002_55.jpg" width="125px">
