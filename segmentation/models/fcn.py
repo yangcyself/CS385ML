@@ -4,7 +4,7 @@ from models.alexnet import alexnet_encoder
 from config import IMAGE_ORDERING
 from models.model_utils import get_segmentation_model
 from models.vgg16 import get_vgg_encoder
-
+from models.resnet50 import get_resnet50_encoder
 
 # crop o1 wrt o2
 def crop(o1, o2, i):
@@ -106,9 +106,20 @@ def fcn_8_vgg(n_classes, input_height=416, input_width=608):
 	return model
 
 
-def fcn_32_vgg(n_classes,  input_height=416, input_width=608):
+def fcn_32_vgg(n_classes, input_height=416, input_width=608):
 	model = fcn_32(n_classes, get_vgg_encoder,  input_height=input_height, input_width=input_width)
 	model.model_name = "fcn_32_vgg"
+	return model
+
+def fcn_8_resnet50(n_classes, input_height=416, input_width=608):
+	model = fcn_8(n_classes, get_resnet50_encoder, input_height=input_height, input_width=input_width)
+	model.model_name = "fcn_8_resnet50"
+	return model
+
+
+def fcn_32_resnet50(n_classes,  input_height=416, input_width=608):
+	model = fcn_32( n_classes, get_resnet50_encoder,  input_height=input_height, input_width=input_width)
+	model.model_name = "fcn_32_resnet50"
 	return model
 
 

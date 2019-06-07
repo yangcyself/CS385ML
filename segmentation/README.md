@@ -10,30 +10,30 @@ The detailed structures is in the following list
 
 | Encoder | decoder | structure |
 | ---- | ---- | ---- |
-| alexnet | fcn_8 | [fcn_8_alexnet]()|
-| alexnet | fcn_32 | [fcn_32_alexnet]()|
-| vgg16 | fcn_8 | [fcn_8_vgg]()|
-| vgg16 | fcn_32 | [fcn_32_vgg]()|
-| resnet50 | fcn_8 | [resnet50_8_vgg]()|
-| resnet50 | fcn_32 | [resnet50_32_vgg]()|
+| alexnet | fcn_8 | [fcn_8_alexnet](https://github.com/yangcyself/CS385ML/blob/master/segmentation/docs/fcn_8_alexnet.png)|
+| alexnet | fcn_32 | [fcn_32_alexnet](https://github.com/yangcyself/CS385ML/blob/master/segmentation/docs/fcn_32_alexnet.png)|
+| vgg16 | fcn_8 | [fcn_8_vgg](https://github.com/yangcyself/CS385ML/blob/master/segmentation/docs/fcn_8_vgg.png)|
+| vgg16 | fcn_32 | [fcn_32_vgg](https://github.com/yangcyself/CS385ML/blob/master/segmentation/docs/fcn_32_vgg.png)|
+| resnet50 | fcn_8 | [fcn_8_resnet50](https://github.com/yangcyself/CS385ML/blob/master/segmentation/docs/fcn_8_resnet50.png)|
+| resnet50 | fcn_32 | [fcn_32_resnet50](https://github.com/yangcyself/CS385ML/blob/master/segmentation/docs/fcn_32_resnet50.png)|
 
 ## Performance
 We train and test our structures on [CUB200 dataset](http://www.vision.caltech.edu/visipedia/CUB-200-2011.html), where it gives 11788 bird pictures of 200 kinds. According to the provided train_test_split annotations, we split the pictures into training set(5994 pictures) and validation set(5794 pictures). It provide the annotation for segmentation in which it only annotate the bird zone and non-bird zone, like this 
 
-<figure class="half">
-    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/sample_images/Black_Footed_Albatross_0002_55.jpg" width="200">
-    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/sample_labels/Black_Footed_Albatross_0002_55.png" width="200">
-</figure>
+<div align="center">
+    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/sample_images/Black_Footed_Albatross_0002_55.jpg" height="200px">
+    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/sample_labels/Black_Footed_Albatross_0002_55.png" height="200px">
+</div>
 
 
 So there are only 2 classes of zones for segmentation. We test the "classwise IoU" and "total mean IoU" for all structures base on the whole validation set. The result is as follows
 
-| Encoder | decoder | Mean Acc | total IoU |
-| ---- | ---- | ---- | ---- |
-| alexnet | fcn_8 | | | 
-| alexnet | fcn_32 | | |
-| vgg16 | fcn_8 | | |
-| vgg16 | fcn_32 | | |
+| Encoder | decoder | Mean Acc | total IoU | Epochs |
+| ---- | ---- | ---- | ---- | ---- |
+| alexnet | fcn_8 | 95.3 | 74.4 | 20 |
+| alexnet | fcn_32 | 94.7 | 70.0 | 20 |
+| vgg16 | fcn_8 | 85.9 | 76.7 | 20 |
+| vgg16 | fcn_32 | 82.1 | 70.6 | 20 |
 
 
 for resnet, we didn't manage to finish the training because it requires way too much FLOPs and we don't have better GPU. So we quote the test result on [other people's work](https://arxiv.org/pdf/1611.08986.pdf)
@@ -43,6 +43,48 @@ for resnet, we didn't manage to finish the training because it requires way too 
 | resnet50 | FCN_8 | 74.42 | 47.42 | 33.89 |
 | resnet101 | FCN_8 | 75.56 | 50.11 | 35.76 |
 ## Visualization
+----------raw image--------image labels--------fcn_8_alexnet--------fcn_32_alexnet--------fcn_8_vgg--------fcn_32_vgg
+
+<div align="center">
+    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/sample_images/Black_Footed_Albatross_0002_55.jpg" width="125px">
+    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/sample_labels/Black_Footed_Albatross_0002_55.png" width="125px">
+    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/fcn_8_alexnet/Black_Footed_Albatross_0002_55.jpg" width="125px">
+    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/fcn_32_alexnet/Black_Footed_Albatross_0002_55.jpg" width="125px">
+    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/fcn_8_vgg/Black_Footed_Albatross_0002_55.jpg" width="125px">
+    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/fcn_32_vgg/Black_Footed_Albatross_0002_55.jpg" width="125px">
+</div>
+<div align="center">
+    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/sample_images/Bronzed_Cowbird_0005_24173.jpg" width="125px">
+    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/sample_labels/Bronzed_Cowbird_0005_24173.png" width="125px">
+    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/fcn_8_alexnet/Bronzed_Cowbird_0005_24173.jpg" width="125px">
+    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/fcn_32_alexnet/Bronzed_Cowbird_0005_24173.jpg" width="125px">
+    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/fcn_8_vgg/Bronzed_Cowbird_0005_24173.jpg" width="125px">
+    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/fcn_32_vgg/Bronzed_Cowbird_0005_24173.jpg" width="125px">
+</div>
+<div align="center">
+    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/sample_images/European_Goldfinch_0013_794687.jpg" width="125px">
+    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/sample_labels/European_Goldfinch_0013_794687.png" width="125px">
+    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/fcn_8_alexnet/European_Goldfinch_0013_794687.jpg" width="125px">
+    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/fcn_32_alexnet/European_Goldfinch_0013_794687.jpg" width="125px">
+    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/fcn_8_vgg/European_Goldfinch_0013_794687.jpg" width="125px">
+    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/fcn_32_vgg/European_Goldfinch_0013_794687.jpg" width="125px">
+</div>
+<div align="center">
+    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/sample_images/Lazuli_Bunting_0025_15079.jpg" width="125px">
+    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/sample_labels/Lazuli_Bunting_0025_15079.png" width="125px">
+    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/fcn_8_alexnet/Lazuli_Bunting_0025_15079.jpg" width="125px">
+    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/fcn_32_alexnet/Lazuli_Bunting_0025_15079.jpg" width="125px">
+    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/fcn_8_vgg/Lazuli_Bunting_0025_15079.jpg" width="125px">
+    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/fcn_32_vgg/Lazuli_Bunting_0025_15079.jpg" width="125px">
+</div>
+<div align="center">
+    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/sample_images/Rhinoceros_Auklet_0001_797538.jpg" width="125px">
+    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/sample_labels/Rhinoceros_Auklet_0001_797538.png" width="125px">
+    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/fcn_8_alexnet/Rhinoceros_Auklet_0001_797538.jpg" width="125px">
+    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/fcn_32_alexnet/Rhinoceros_Auklet_0001_797538.jpg" width="125px">
+    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/fcn_8_vgg/Rhinoceros_Auklet_0001_797538.jpg" width="125px">
+    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/fcn_32_vgg/Rhinoceros_Auklet_0001_797538.jpg" width="125px">
+</div>
 
 ## How to use
 we stores all the structures in [models](https://github.com/yangcyself/CS385ML/tree/master/segmentation/models), where all the FCN decoders is representated in [fcn.py](https://github.com/yangcyself/CS385ML/blob/master/segmentation/models/fcn.py).

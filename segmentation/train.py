@@ -6,17 +6,19 @@ from config import *
 from models import fcn
 import os
 import six
+import glob
 
 
 def find_latest_checkpoint(checkpoints_path):
-    ep = 0
+    paths = glob.glob(checkpoints_path + ".*")
+    maxep = -1
     r = None
-    while True:
-        if os.path.isfile(checkpoints_path + "." + str(ep)):
-            r = checkpoints_path + "." + str(ep)
-        else:
-            return r
-        ep += 1
+    for path in paths:
+        ep = int(path.split('.')[-1])
+        if ep > maxep:
+            maxep = ep
+            r = path
+    return r, maxep
 
 
 def train(model,
@@ -54,6 +56,7 @@ def train(model,
     output_height = model.output_height
     output_width = model.output_width
 
+    model.summary()
     if validate:
         assert not (val_images is None)
         assert not (val_annotations is None)
@@ -77,8 +80,9 @@ def train(model,
         print("Loading weights from ", load_weights)
         model.load_weights(load_weights)
 
+    latest_ep = -1
     if auto_resume_checkpoint and (not checkpoints_path is None):
-        latest_checkpoint = find_latest_checkpoint(checkpoints_path)
+        latest_checkpoint, latest_ep = find_latest_checkpoint(checkpoints_path)
         if not latest_checkpoint is None:
             print("Loading the weights from latest checkpoint ", latest_checkpoint)
             model.load_weights(latest_checkpoint)
@@ -111,7 +115,7 @@ def train(model,
 
 
     if not validate:
-        for ep in range(epochs):
+        for ep in range(latest_ep + 1, latest_ep + 1 + epochs):
             print("Starting Epoch ", ep)
             model.fit_generator(train_gen,
                                 steps_per_epoch,
@@ -122,7 +126,7 @@ def train(model,
                 print("saved ", checkpoints_path + ".models." + str(ep))
             print("Finished Epoch", ep)
     else:
-        for ep in range(epochs):
+        for ep in range(latest_ep + 1, latest_ep + 1 + epochs):
             print("Starting Epoch ", ep)
             model.fit_generator(train_gen,
                                 steps_per_epoch,
@@ -138,31 +142,29 @@ def train(model,
 
 
 if __name__ == '__main__':
-    model = fcn.fcn_32_vgg(2, 224, 224)
     train_images_dir = DATA_PATH + "/train_images"
     val_images_dir = DATA_PATH + "/val_images"
     train_labels_dir = DATA_PATH + "/train_labels"
     val_labels_dir = DATA_PATH + "/val_labels"
-    model.summary()
-    tensorboard = TensorBoard(log_dir='./logs/fcn_8_alexnet/')
-    train(model=model,
+    tensorboard = TensorBoard(log_dir='./logs/%s/' % MODEL_NAME)
+    train(model=MODEL_NAME,
           train_images=train_images_dir,
           train_annotations=train_labels_dir,
-          input_height=224,
-          input_width=224,
-          n_classes=2,
+          input_height=INPUT_HEIGHT,
+          input_width=INPUT_WIDTH,
+          n_classes=NUM_CLASS,
           verify_dataset=False,
-          checkpoints_path="checkpoints/fcn_8_alexnet",
-          epochs=10,
+          checkpoints_path="checkpoints/" + MODEL_NAME,    # don't add '/' in the end
+          epochs=EPOCH,
           batch_size=BATCH_SIZE,
           validate=True,
           val_images=val_images_dir,
           val_annotations=val_labels_dir,
           val_batch_size=BATCH_SIZE,
-          auto_resume_checkpoint=False,
+          auto_resume_checkpoint=AUTO_RESUME,
           load_weights=None,
-          steps_per_epoch=512,
-          optimizer_name='adadelta',
+          steps_per_epoch=STEPS_PER_EPOCH,
+          optimizer_name=OPTIMIZER,
           callbacks=[tensorboard]
           )
 
