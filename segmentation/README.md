@@ -28,12 +28,12 @@ We train and test our structures on [CUB200 dataset](http://www.vision.caltech.e
 
 So there are only 2 classes of zones for segmentation. We test the "classwise IoU" and "total mean IoU" for all structures base on the whole validation set. The result is as follows
 
-| Encoder | decoder | Mean Acc | total IoU |
-| ---- | ---- | ---- | ---- |
-| alexnet | fcn_8 | | | 
-| alexnet | fcn_32 | | |
-| vgg16 | fcn_8 | | |
-| vgg16 | fcn_32 | | |
+| Encoder | decoder | Mean Acc | total IoU | Epochs |
+| ---- | ---- | ---- | ---- | ---- |
+| alexnet | fcn_8 | 95.3 | 74.4 | 20 |
+| alexnet | fcn_32 | 94.7 | 70.0 | 20 |
+| vgg16 | fcn_8 | 85.9 | 76.7 | 20 |
+| vgg16 | fcn_32 | 82.1 | 70.6 | 20 |
 
 
 for resnet, we didn't manage to finish the training because it requires way too much FLOPs and we don't have better GPU. So we quote the test result on [other people's work](https://arxiv.org/pdf/1611.08986.pdf)
