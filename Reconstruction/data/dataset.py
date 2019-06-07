@@ -84,8 +84,8 @@ class StanfordDog(data.Dataset):
                     self.imgs += bred_imgs[int(0.7 * img_num):]
                     self.labels += bred_labels[int(0.7 * img_num):]
 
-        if autosave:
-            self.save()
+            if autosave:
+                self.save()
 
     def save(self):
         with open(self.datapkl_path, 'wb') as save_data:
