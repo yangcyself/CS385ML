@@ -17,8 +17,6 @@ def get_pairs_from_paths(images_path, segs_path):
         os.path.join(images_path, "*.jpeg"))
     segmentations = glob.glob(os.path.join(segs_path, "*.png"))
 
-    # segmentations_d = dict(zip(segmentations, segmentations))
-
     ret = []
     for im in images:
         seg_bnme = os.path.basename(im).replace(".jpg", ".png").replace(".jpeg", ".png")

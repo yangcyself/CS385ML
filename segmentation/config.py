@@ -1,6 +1,11 @@
 IMAGE_ORDERING = 'channels_last'
-DATA_PATH = "C:/Users/ChenZixuan/Documents/datasets/CUB200_dataset/CUB_200_2011"
-NUM = 1000
-BATCH_SIZE = 100
+DATA_PATH = "/home/chenzixuan/datasets/CUB200_dataset/CUB_200_2011"
+MODEL_NAME = "fcn_8_vgg"
+BATCH_SIZE = 40
 EPOCH = 5
-m = 255
+INPUT_HEIGHT = 224
+INPUT_WIDTH = 224
+NUM_CLASS = 2
+STEPS_PER_EPOCH = 512
+OPTIMIZER = 'adadelta'
+AUTO_RESUME = True
