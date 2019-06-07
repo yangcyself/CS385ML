@@ -11,6 +11,8 @@ from torch.utils.data import DataLoader
 from torchvision import datasets
 from torch.autograd import Variable
 from models.GAN import Generator, Discriminator
+from models.ConvVAE import ConvVAE
+from utils.get_cdim import update_code_dim
 
 import torch.nn as nn
 import torch.nn.functional as F
@@ -24,9 +26,9 @@ parser.add_argument("--lr", type=float, default=0.0005, help="adam: learning rat
 parser.add_argument("--b1", type=float, default=0.5, help="adam: decay of first order momentum of gradient")
 parser.add_argument("--b2", type=float, default=0.999, help="adam: decay of first order momentum of gradient")
 parser.add_argument("--n_cpu", type=int, default=8, help="number of cpu threads to use during batch generation")
-parser.add_argument("--latent_dim", type=int, default=100, help="dimensionality of the latent space")
+parser.add_argument("--latent_dim", type=int, default=128, help="dimensionality of the latent space")
 parser.add_argument("--img_size", type=int, default=32, help="size of each image dimension")
-parser.add_argument("--channels", type=int, default=1, help="number of image channels")
+parser.add_argument("--channels", type=int, default=3, help="number of image channels")
 parser.add_argument("--sample_interval", type=int, default=400, help="interval betwen image samples")
 opt = parser.parse_args()
 
@@ -35,8 +37,14 @@ cuda = True if torch.cuda.is_available() else False
 
 adversarial_loss = torch.nn.BCELoss()
 
+def loss_functions(recon_x, x, mean, log_var):
+    BCE = torch.nn.BCELoss()(recon_x, x)
+    KLD = -0.5 * torch.sum(1 + log_var - mean.pow(2) - log_var.exp())
+
+    return (BCE + KLD) / x.size(0)
+
 # Initialize generator and discriminator
-generator = Generator(z_dim=opt.latent_dim, img_shape=img_shape)
+generator = ConvVAE(c_dim=update_code_dim(128, 32, 4), z_dim=128, num_channels=opt.channels)
 discriminator = Discriminator(img_shape=img_shape)
 
 if cuda:
@@ -44,36 +52,17 @@ if cuda:
     discriminator.cuda()
     adversarial_loss.cuda()
 
-# Configure data loader
-if opt.dataset == 'mnist':
-    dataloader = torch.utils.data.DataLoader(
-        datasets.MNIST(
-            "./data/mnist",
-            train=True,
-            transform=transforms.Compose(
-                [transforms.Resize(opt.img_size), transforms.ToTensor(), transforms.Normalize([0.5], [0.5])]
+dataloader = torch.utils.data.DataLoader(dataset=StanfordDog(root='./data',
+            transforms=transforms.Compose([transforms.Resize(opt.img_size), transforms.ToTensor(), transforms.Normalize([0.5], [0.5])]
             ),
-        ),
-        batch_size=opt.batch_size,
-        shuffle=True,
-    )
-else:
-    dataloader = torch.utils.data.DataLoader(dataset=StanfordDog(root='./data',
-                transforms=transforms.Compose([transforms.Resize(opt.img_size), transforms.ToTensor(), transforms.Normalize([0.5], [0.5])]
-                ),
-                train=True, size=opt.img_size
-                ), batch_size=opt.batch_size, shuffle=True
-            )
+            train=True, size=opt.img_size
+            ), batch_size=opt.batch_size, shuffle=True
+        )
 
-# Optimizers
 optimizer_G = torch.optim.Adam(generator.parameters(), lr=opt.lr, betas=(opt.b1, opt.b2))
 optimizer_D = torch.optim.Adam(discriminator.parameters(), lr=opt.lr, betas=(opt.b1, opt.b2))
 
 Tensor = torch.cuda.FloatTensor if cuda else torch.FloatTensor
-
-# ----------
-#  Training
-# ----------
 
 for epoch in range(opt.n_epochs):
     for i, (imgs, _) in enumerate(dataloader):
@@ -85,20 +74,11 @@ for epoch in range(opt.n_epochs):
         # Configure input
         real_imgs = Variable(imgs.type(Tensor))
 
-        # -----------------
-        #  Train Generator
-        # -----------------
-
         optimizer_G.zero_grad()
 
-        # Sample noise as generator input
-        z = Variable(Tensor(np.random.normal(0, 1, (imgs.shape[0], opt.latent_dim))))
-
         # Generate a batch of images
-        gen_imgs = generator(z)
-
-        # Loss measures generator's ability to fool the discriminator
-        g_loss = adversarial_loss(discriminator(gen_imgs), valid)
+        gen_imgs = generator(real_imgs)
+        g_loss = loss_functions(discriminator(gen_imgs), valid, generator.mu, generator.log_sigma)
 
         g_loss.backward()
         optimizer_G.step()
@@ -124,4 +104,4 @@ for epoch in range(opt.n_epochs):
 
         batches_done = epoch * len(dataloader) + i
         if batches_done % opt.sample_interval == 0:
-            save_image(gen_imgs.data[:25], "./gan_images/%d.png" % batches_done, nrow=5, normalize=True)
+            save_image(gen_imgs.data[:25], "./vae_gan_images/%d.png" % batches_done, nrow=5, normalize=True)

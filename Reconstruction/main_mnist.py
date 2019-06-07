@@ -24,7 +24,7 @@ from scipy.stats import norm
 parser = argparse.ArgumentParser()
 parser.add_argument('--model', type=str, default='simpleAE', help='Choosing model')
 parser.add_argument('--dataset', type=str, default='mnist', help='Choosing dataset')
-parser.add_argument('--learning_rate', type=float, default=0.3e-3, help='n-history')
+parser.add_argument('--learning_rate', type=float, default=1e-3, help='n-history')
 parser.add_argument('--hidden_size', type=int, default=128, help='hidden size')
 parser.add_argument('--batch_size', type=int, default=32, help='batch size')
 parser.add_argument('--max_epoch', type=int, default=100, help='max number of epochs to train for')
