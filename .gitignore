@@ -11,3 +11,5 @@ Reconstruction/data/__pycache__/*
 classification/models/__pycache__/*
 segmentation/models/__pycache__/*
 .vscode/*
+classification/util/.ipynb_checkpoints/*
+temp/__pycache__/*
