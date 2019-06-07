@@ -18,11 +18,12 @@ from torch.utils.data.sampler import SubsetRandomSampler
 from torchvision.datasets import MNIST
 
 
-from models.littleConv import littleConv
+from models.littleConv import littleConv,littlePoolingConv
 import sys
 sys.path.append('../Reconstruction')
 from  utils.get_cdim import update_code_dim
 from data.dataset import StanfordDog
+
 
 
 QUICK = False
@@ -43,6 +44,8 @@ parser.add_argument('-vb', '--val-batch-size', default=1024, type=int,
                     metavar='N', help='validation mini-batch size (default: 1024)')
 parser.add_argument('--lr', '--learning-rate', default=0.01, type=float,
                     metavar='LR', help='initial learning rate')
+parser.add_argument('-r', '--resolution', default=96, type=int,
+                    metavar='R', help='resolution of picture')
 parser.add_argument('--momentum', default=0.9, type=float, metavar='M',
                     help='momentum')
 parser.add_argument('--weight-decay', '--wd', default=1e-4, type=float,
@@ -91,8 +94,9 @@ def main():
     # val_loader = dataset.test_loader(args.test_path,batch_size = args.batch_size)
     ################# USE STANFORD DOGS ########################
     channel_num = 3
-    train_loader = torch.utils.data.DataLoader(dataset=StanfordDog(root='../Reconstruction/data/', train=True, already = True), batch_size=args.batch_size, shuffle=True)
-    val_loader = torch.utils.data.DataLoader(dataset=StanfordDog(root='../Reconstruction/data/', train=False,  already = True), batch_size=args.batch_size, shuffle=True)
+    resolution = 96
+    train_loader = torch.utils.data.DataLoader(dataset=StanfordDog(root='../Reconstruction/data/', size = resolution , train=True, already = True),batch_size=args.batch_size, shuffle=True)
+    val_loader = torch.utils.data.DataLoader(dataset=StanfordDog(root='../Reconstruction/data/', size = resolution , train=False,  already = True),batch_size=args.batch_size, shuffle=True)
     ################# Tiny Image Net ########################
     # channel_num = 3
     # train_loader = torch.utils.data.DataLoader(dataset=TinyImageNet('/home/ycy/dataset/tiny-imagenet-200/', train=True), batch_size=args.batch_size, shuffle=True)
@@ -102,7 +106,9 @@ def main():
     #model = pipeNet(100).cuda() # The Second argument of pipenet Changes Channel Wise DS rate
     # model = cdsresnext50(inputChannels = channel_num, dsProbability = 0.75).cuda()
     # model = resnext50(inputChannels = 1).cuda()
-    model = littleConv(c_dim=update_code_dim(128, 32, 4), z_dim=200 ,num_channels = channel_num)
+    # model = littleConv(c_dim=update_code_dim(128, resolution, 4), z_dim=200 ,num_channels = channel_num)
+    model = littlePoolingConv(c_dim=update_code_dim(128, resolution, 4), z_dim=200 ,num_channels = channel_num)
+    print("model: littlePoolingConv")
     model = model.cuda()
     criterion = nn.CrossEntropyLoss().cuda()
     optimizer = torch.optim.SGD(model.parameters(),
@@ -129,7 +135,7 @@ def main():
     else:
         main_train(args,optimizer,train_loader,val_loader,model,criterion)
 def main_train(args,optimizer,train_loader,val_loader,model,criterion):
-    special_epochs = [1,3,5,7,9,11,13]
+    special_epochs = [1,3,5,7,9,11,13,15,17,19]
     for epoch in range(args.start_epoch, args.epochs):
         adjust_learning_rate(optimizer, epoch)
 
@@ -141,7 +147,7 @@ def main_train(args,optimizer,train_loader,val_loader,model,criterion):
                 'epoch': epoch + 1,
                 'state_dict': model.state_dict(),
                 'optimizer' : optimizer.state_dict(),
-            },"littleConv_epoch%d_ckpt.pth.tar")
+            },"littlePoolingConvckpt_%d/littlePoolingConv_epoch%d_ckpt.pth.tar_%d"%(args.resolution, epoch,int(time.time())))
 
 def save_checkpoint(state, filename='{}_{}.checkpoint.pth.tar'.format("little",args.message)):
     torch.save(state, filename)
