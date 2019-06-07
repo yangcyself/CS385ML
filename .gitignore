@@ -13,3 +13,4 @@ segmentation/models/__pycache__/*
 .vscode/*
 classification/util/.ipynb_checkpoints/*
 temp/__pycache__/*
+Reconstruction/vae_gan_images/*
