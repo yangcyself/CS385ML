@@ -14,8 +14,8 @@ The detailed structures is in the following list
 | alexnet | fcn_32 | [fcn_32_alexnet](https://github.com/yangcyself/CS385ML/blob/master/segmentation/docs/fcn_32_alexnet.png)|
 | vgg16 | fcn_8 | [fcn_8_vgg](https://github.com/yangcyself/CS385ML/blob/master/segmentation/docs/fcn_8_vgg.png)|
 | vgg16 | fcn_32 | [fcn_32_vgg](https://github.com/yangcyself/CS385ML/blob/master/segmentation/docs/fcn_32_vgg.png)|
-| resnet50 | fcn_8 | [resnet50_8_vgg](https://github.com/yangcyself/CS385ML/blob/master/segmentation/docs/resnet50_8_vgg.png)|
-| resnet50 | fcn_32 | [resnet50_32_vgg](https://github.com/yangcyself/CS385ML/blob/master/segmentation/docs/resnet50_32_vgg.png)|
+| resnet50 | fcn_8 | [fcn_8_resnet50](https://github.com/yangcyself/CS385ML/blob/master/segmentation/docs/fcn_8_resnet50.png)|
+| resnet50 | fcn_32 | [fcn_32_resnet50](https://github.com/yangcyself/CS385ML/blob/master/segmentation/docs/fcn_32_resnet50.png)|
 
 ## Performance
 We train and test our structures on [CUB200 dataset](http://www.vision.caltech.edu/visipedia/CUB-200-2011.html), where it gives 11788 bird pictures of 200 kinds. According to the provided train_test_split annotations, we split the pictures into training set(5994 pictures) and validation set(5794 pictures). It provide the annotation for segmentation in which it only annotate the bird zone and non-bird zone, like this 
