@@ -20,18 +20,24 @@ The detailed structures is in the following list
 ## Performance
 We train and test our structures on [CUB200 dataset](http://www.vision.caltech.edu/visipedia/CUB-200-2011.html), where it gives 11788 bird pictures of 200 kinds. According to the provided train_test_split annotations, we split the pictures into training set(5994 pictures) and validation set(5794 pictures). It provide the annotation for segmentation in which it only annotate the bird zone and non-bird zone, like this 
 
+<figure class="half">
+    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/sample_images/Black_Footed_Albatross_0002_55.jpg" width="200">
+    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/sample_labels/Black_Footed_Albatross_0002_55.png" width="200">
+</figure>
+
 
 So there are only 2 classes of zones for segmentation. We test the "classwise IoU" and "total mean IoU" for all structures base on the whole validation set. The result is as follows
 
 | Encoder | decoder | Mean Acc | total IoU |
 | ---- | ---- | ---- | ---- |
-| alexnet | fcn_8 | | | |
+| alexnet | fcn_8 | | | 
 | alexnet | fcn_32 | | |
 | vgg16 | fcn_8 | | |
 | vgg16 | fcn_32 | | |
 
 
 for resnet, we didn't manage to finish the training because it requires way too much FLOPs and we don't have better GPU. So we quote the test result on [other people's work](https://arxiv.org/pdf/1611.08986.pdf)
+
 | Encoder | decoder | Pixel Acc | Mean Acc | Mean IoU |
 | ---- | ---- | ---- | ---- | ---- |
 | resnet50 | FCN_8 | 74.42 | 47.42 | 33.89 |
@@ -39,9 +45,28 @@ for resnet, we didn't manage to finish the training because it requires way too 
 ## Visualization
 
 ## How to use
+we stores all the structures in [models](https://github.com/yangcyself/CS385ML/tree/master/segmentation/models), where all the FCN decoders is representated in [fcn.py](https://github.com/yangcyself/CS385ML/blob/master/segmentation/models/fcn.py).
+
+- Download the [CUB200 dataset](http://www.vision.caltech.edu/visipedia/CUB-200-2011.html)
+
+- Unzip the dataset, place it in a specific place in your computer.
+
+- Configure the `DATA_PATH` in the [config.py](https://github.com/yangcyself/CS385ML/blob/master/segmentation/config.py), where it should be in the format "/.../CUB_200_2011"
+
+- Configure The `MODEL_NAME` in the [config.py](https://github.com/yangcyself/CS385ML/blob/master/segmentation/config.py), which is the model name you want to train, test or predict.
+
+- Configure The `BATCH_SIZE`, `EPOCH` and other hyper parameters
+
+- (optional) Download the [pretrained model]() and place it under the "checkpoints/" directory. Configure the `AUTO_RESUME` to `True`
+
+- Go into this repository and start training or test on the following code
+```
+python train.py
+python predict.py
+```
 
 ## Summary
-
+In this project we explored several famous network structures for FCN. We test its accuracy as well as IoU.
 ## Citation
 - The sourse code of models and some utils are refered from https://github.com/divamgupta/image-segmentation-keras
 
