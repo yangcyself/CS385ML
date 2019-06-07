@@ -1,6 +1,7 @@
 import torch
 from torch.autograd import Variable
 import torch.nn as nn
+from utils.get_cdim import update_code_dim, idx2onehot
 
 from itertools import chain
 import numpy as np
@@ -40,7 +41,7 @@ class CVAE(nn.Module):
 
         """
         if x.dim() > 2:
-            x = x.view(-1, 28*28)
+            x = x.view(-1, 32*32)
 
         batch_size = x.size(0)
 
