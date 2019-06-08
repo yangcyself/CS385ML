@@ -93,10 +93,41 @@ def main():
     # train_loader = dataset.loader(args.train_path,batch_size = args.batch_size)
     # val_loader = dataset.test_loader(args.test_path,batch_size = args.batch_size)
     ################# USE STANFORD DOGS ########################
-    channel_num = 3
+    # channel_num = 3
+    # resolution = 96
+    # train_loader = torch.utils.data.DataLoader(dataset=StanfordDog(root='../Reconstruction/data/', size = resolution , train=True, already = True),batch_size=args.batch_size, shuffle=True)
+    # val_loader = torch.utils.data.DataLoader(dataset=StanfordDog(root='../Reconstruction/data/', size = resolution , train=False,  already = True),batch_size=args.batch_size, shuffle=True)
+    ################# RANDOM DATA GEN for DOGS ########################
+    traindir = 'data/train'
+    valdir = 'data/validation'
     resolution = 96
-    train_loader = torch.utils.data.DataLoader(dataset=StanfordDog(root='../Reconstruction/data/', size = resolution , train=True, already = True),batch_size=args.batch_size, shuffle=True)
-    val_loader = torch.utils.data.DataLoader(dataset=StanfordDog(root='../Reconstruction/data/', size = resolution , train=False,  already = True),batch_size=args.batch_size, shuffle=True)
+    channel_num = 3
+    normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                     std=[0.229, 0.224, 0.225])
+    train_dataset = datasets.ImageFolder(
+        traindir,
+        transforms.Compose([
+            # transforms.ColorJitter(brightness=0.1, contrast=0.1, saturation=0.1, hue=0.1),
+            # transforms.RandomAffine(1, translate=(0.1,0.1), scale=(0.9,1.1), shear=0.2, resample=False),
+            transforms.RandomResizedCrop(resolution),
+            transforms.RandomHorizontalFlip(),
+            transforms.ToTensor(),
+            normalize,
+        ]))
+
+    train_loader = torch.utils.data.DataLoader(
+        train_dataset, batch_size=args.batch_size, shuffle=(True),
+        num_workers=args.workers, pin_memory=True, sampler=None)
+
+    val_loader = torch.utils.data.DataLoader(
+        datasets.ImageFolder(valdir, transforms.Compose([
+            transforms.Resize(resolution),
+            transforms.CenterCrop(resolution),
+            transforms.ToTensor(),
+            normalize,
+        ])),
+        batch_size=args.batch_size, shuffle=False,
+        num_workers=args.workers, pin_memory=True)
     ################# Tiny Image Net ########################
     # channel_num = 3
     # train_loader = torch.utils.data.DataLoader(dataset=TinyImageNet('/home/ycy/dataset/tiny-imagenet-200/', train=True), batch_size=args.batch_size, shuffle=True)

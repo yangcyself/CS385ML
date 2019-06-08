@@ -9,6 +9,7 @@ from utils.get_cdim import update_code_dim, idx2onehot
 
 from data.dataset import StanfordDog
 from Solver import LinearSolver, ConvSolver
+from torchvision.utils import save_image
 
 from models.simpleAE import simpleAE
 from models.LinearVAE import LinearVAE
@@ -69,7 +70,8 @@ elif optimizer.lower() == 'rmsprop':
 
 checkpoints = glob.glob(pathname='checkpoints/{0}_{1}_{2}*'.format(model_name, hidden, dataset))
 if len(checkpoints) != 0:
-    model.load(path=checkpoints[0])
+    model.load_state_dict(torch.load(checkpoints[0], map_location='cpu'))
+    # model.load(path=checkpoints[0])
 
     n = 15  # figure with 15x15 digits
     digit_size = 32
@@ -94,21 +96,23 @@ if len(checkpoints) != 0:
         epsilon = torch.autograd.Variable(torch.randn(mu.size()), requires_grad=False).type(torch.FloatTensor)
         sigma = torch.exp(sigma / 2)
         print(sigma.shape)
-        z1 = (mu + sigma * epsilon).detach().numpy()[0, :].reshape(1, -1)
+        z1 = (mu + sigma * epsilon).detach().numpy()
 
-    z = (z1 + z2) / 2
-    output = model.Decoder(torch.from_numpy(z1).float()).reshape([channel, 32, 32])
-    output1 = model.Decoder(torch.from_numpy(z2).float()).reshape([channel, 32, 32])
-    output2 = model.Decoder(torch.from_numpy(z).float()).reshape([channel, 32, 32])
+    # z = (z1 + z2) / 2
+    output = model.Decoder(torch.from_numpy(z1).float())
+    save_image(eg.data[:25, :, :, :], "./images/ori_dog.png", nrow=5, normalize=True)
+    save_image(output.data[:25, :, :, :], "./images/vae_gen.png", nrow=5, normalize=True)
+    # output1 = model.Decoder(torch.from_numpy(z2).float()).reshape([channel, 32, 32])
+    # output2 = model.Decoder(torch.from_numpy(z).float()).reshape([channel, 32, 32])
     print(output.shape)
-    plt.subplot(221)
+    plt.subplot(121)
     plt.imshow(transforms.ToPILImage()(output[:, :, :]).convert('RGB'))
-    plt.subplot(222)
-    plt.imshow(transforms.ToPILImage()(output1[:, :, :]).convert('RGB'))
-    plt.subplot(223)
-    plt.imshow(transforms.ToPILImage()(output2[:, :, :]).convert('RGB'))
-    plt.subplot(224)
-    plt.imshow(transforms.ToPILImage()(output2[:, :, :]).convert('RGB'))
+    plt.subplot(122)
+    plt.imshow(transforms.ToPILImage()(eg[0, :, :, :]).convert('RGB'))
+    # plt.subplot(223)
+    # plt.imshow(transforms.ToPILImage()(output2[:, :, :]).convert('RGB'))
+    # plt.subplot(224)
+    # plt.imshow(transforms.ToPILImage()(output2[:, :, :]).convert('RGB'))
     plt.show()
 
     if model.model_name == 'LinearVAE':
