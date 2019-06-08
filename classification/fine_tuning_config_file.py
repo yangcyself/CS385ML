@@ -5,7 +5,7 @@ DECAY_WEIGHT = 0.1 # factor by which the learning rate is reduced.
 
 
 # DATASET INFO
-NUM_CLASSES = 2 # set the number of classes in your dataset
+NUM_CLASSES = 120 # set the number of classes in your dataset
 # DATA_DIR = 'hymenoptera_data/' # to run with the sample dataset, just set to 'hymenoptera_data'
 DATA_DIR = 'data/'
 

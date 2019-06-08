@@ -105,7 +105,7 @@ data_dir = DATA_DIR
 dsets = {x: datasets.ImageFolder(os.path.join(data_dir, x), data_transforms[x])
          for x in ['train', 'val']}
 dset_loaders = {x: torch.utils.data.DataLoader(dsets[x], batch_size=BATCH_SIZE,
-                                               shuffle=True, num_workers=25)
+                                               shuffle=True, num_workers=4)
                 for x in ['train', 'val']}
 dset_sizes = {x: len(dsets[x]) for x in ['train', 'val']}
 dset_classes = dsets['train'].classes
@@ -161,14 +161,13 @@ def train_model(model, criterion, optimizer, lr_scheduler, num_epochs=100):
             # Iterate over data.
             for data in dset_loaders[phase]:
                 inputs, labels = data
-                print(inputs.size())
+                #print(inputs.size())
                 # wrap them in Variable
                 if use_gpu:
-                    try:
-                        inputs, labels = Variable(inputs.float().cuda()),                             
-                        Variable(labels.long().cuda())
-                    except:
-                        print(inputs,labels)
+                    #try:
+                    inputs, labels = Variable(inputs.float().cuda()), Variable(labels.long().cuda())
+                    #except:
+                    #    print(inputs,labels)
                 else:
                     inputs, labels = Variable(inputs), Variable(labels)
 
@@ -206,6 +205,8 @@ def train_model(model, criterion, optimizer, lr_scheduler, num_epochs=100):
             epoch_acc = running_corrects.item() / float(dset_sizes[phase])
             print('{} Loss: {:.4f} Acc: {:.4f}'.format(
                 phase, epoch_loss, epoch_acc))
+       
+
 
 
             # deep copy the model
@@ -217,6 +218,8 @@ def train_model(model, criterion, optimizer, lr_scheduler, num_epochs=100):
                     best_acc = epoch_acc
                     best_model = copy.deepcopy(model)
                     print('new best accuracy = ',best_acc)
+        #model.save_state_dict('finetuneckpts/fine_tuned_best_model%d.pt'%epoch)
+        torch.save(model.state_dict(), 'finetuneckpts/fine_tuned_best_model%d.pt'%epoch)
     time_elapsed = time.time() - since
     print('Training complete in {:.0f}m {:.0f}s'.format(
         time_elapsed // 60, time_elapsed % 60))
@@ -264,4 +267,5 @@ model_ft = train_model(model_ft, criterion, optimizer_ft, exp_lr_scheduler,
                        num_epochs=50)
 
 # Save model
-model_ft.save_state_dict('fine_tuned_best_model.pt')
+#model_ft.save_state_dict('fine_tuned_best_model.pt')
+torch.save(model.state_dict(), 'finetuneckpts/fine_tuned_best_model.pt')
