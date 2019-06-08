@@ -30,4 +30,7 @@ Work on mnist
 - We also tried GAN on mnist shown as follow.
   ![gan](./images/gan.png)
 - For RGB images, we also do VAE on Stanford Dog dataset.
+  ![dog](./images/ori_dog.png)
+  ![vaedog](./images/vae_gen.png)
+- Using VAE-GAN to get better result
 
