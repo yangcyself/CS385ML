@@ -70,7 +70,7 @@ class littlePoolingConv(torch.nn.Module):
     Class encoder
 
     """
-    def __init__(self, c_dim, z_dim=200, num_channels=1 ,dropoutP = 0.2,std = 0.02):
+    def __init__(self, c_dim, z_dim=200, num_channels=1 ,dropoutP = 0.2, std=0.02):
         """
         Initialization
         conv -> ReLU x 4 -> (mu, sigma)

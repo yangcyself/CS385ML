@@ -12,7 +12,7 @@ class StanfordDog(data.Dataset):
     Loading StanfordDog dataset
 
     """
-    def __init__(self, root, transforms=None, train=True, size=32, already=False, autosave = True):
+    def __init__(self, root, transforms=None, train=True, size=64, already=False, autosave = True):
         """
         Initialization of the dataset
         root : place holder of the mnist dataset

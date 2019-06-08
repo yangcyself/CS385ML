@@ -25,12 +25,14 @@ class Encoder(torch.nn.Module):
 			nn.Conv2d(64, 128, 4, 2, 1, bias=False), # b x 128 x 7 x 7
 			nn.ReLU(True),
 			nn.BatchNorm2d(128),
+            # nn.MaxPool2d(kernel_size=2),
 			nn.Conv2d(128, 256, 4, 2, 1, bias=False), # b x 256 x 3 x 3
 			nn.ReLU(True),
 			nn.BatchNorm2d(256),
 			nn.Conv2d(256, 128, 4, 2, 1, bias=False), # b x 128 x 1 x 1
 			nn.ReLU(True),
 			nn.BatchNorm2d(128)
+            # nn.MaxPool2d(kernel_size=2)
 			)
 
         self.c_dim = c_dim

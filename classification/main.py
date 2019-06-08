@@ -178,7 +178,7 @@ def main_train(args,optimizer,train_loader,val_loader,model,criterion):
                 'epoch': epoch + 1,
                 'state_dict': model.state_dict(),
                 'optimizer' : optimizer.state_dict(),
-            },"littlePoolingConvckpt_%d/littlePoolingConv_epoch%d_ckpt.pth.tar_%d"%(args.resolution, epoch,int(time.time())))
+            },"littleDropoutConvckpt_%d/littleDropoutConv_epoch%d_ckpt.pth.tar_%d"%(args.resolution, epoch,int(time.time())))
 
 def save_checkpoint(state, filename='{}_{}.checkpoint.pth.tar'.format("little",args.message)):
     torch.save(state, filename)
