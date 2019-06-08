@@ -70,7 +70,7 @@ class littlePoolingConv(torch.nn.Module):
     Class encoder
 
     """
-    def __init__(self, c_dim, z_dim=200, num_channels=1 ,dropoutP = 0.2):
+    def __init__(self, c_dim, z_dim=200, num_channels=1 ,dropoutP = 0.2,std = 0.02):
         """
         Initialization
         conv -> ReLU x 4 -> (mu, sigma)
@@ -101,7 +101,7 @@ class littlePoolingConv(torch.nn.Module):
 
         self.c_dim = c_dim
         self.z_dim = z_dim
-        self.num_channels = num_channel
+        self.num_channels = num_channels
         self.std = std
         self.linear= nn.Linear(int(np.prod(c_dim)), z_dim)
         self.init_weights()
