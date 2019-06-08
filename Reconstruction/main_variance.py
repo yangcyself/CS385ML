@@ -96,19 +96,19 @@ if len(checkpoints) != 0:
         print(sigma.shape)
         z1 = (mu + sigma * epsilon).detach().numpy()[0, :].reshape(1, -1)
 
-    z = (z1 + z2) / 2
+    # z = (z1 + z2) / 2
     output = model.Decoder(torch.from_numpy(z1).float()).reshape([channel, 32, 32])
-    output1 = model.Decoder(torch.from_numpy(z2).float()).reshape([channel, 32, 32])
-    output2 = model.Decoder(torch.from_numpy(z).float()).reshape([channel, 32, 32])
+    # output1 = model.Decoder(torch.from_numpy(z2).float()).reshape([channel, 32, 32])
+    # output2 = model.Decoder(torch.from_numpy(z).float()).reshape([channel, 32, 32])
     print(output.shape)
-    plt.subplot(221)
+    plt.subplot(121)
     plt.imshow(transforms.ToPILImage()(output[:, :, :]).convert('RGB'))
-    plt.subplot(222)
-    plt.imshow(transforms.ToPILImage()(output1[:, :, :]).convert('RGB'))
-    plt.subplot(223)
-    plt.imshow(transforms.ToPILImage()(output2[:, :, :]).convert('RGB'))
-    plt.subplot(224)
-    plt.imshow(transforms.ToPILImage()(output2[:, :, :]).convert('RGB'))
+    plt.subplot(122)
+    plt.imshow(transforms.ToPILImage()(eg[0, :, :, :]).convert('RGB'))
+    # plt.subplot(223)
+    # plt.imshow(transforms.ToPILImage()(output2[:, :, :]).convert('RGB'))
+    # plt.subplot(224)
+    # plt.imshow(transforms.ToPILImage()(output2[:, :, :]).convert('RGB'))
     plt.show()
 
     if model.model_name == 'LinearVAE':
