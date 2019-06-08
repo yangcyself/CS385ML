@@ -50,7 +50,7 @@ ImageFile.LOAD_TRUNCATED_IMAGES = True
 img_width, img_height = 150, 150
 
 train_data_dir = 'data/train'
-validation_data_dir = 'data/validation'
+validation_data_dir = 'data/val'
 nb_train_samples = 2000
 nb_validation_samples = 800
 epochs = 20
@@ -66,7 +66,7 @@ model.add(Conv2D(64, (3, 3), input_shape=input_shape))
 model.add(Activation('relu'))
 model.add(MaxPooling2D(pool_size=(2, 2)))
 
-model.add(Conv2D(128, (3, 3)))
+model.add(Conv2D(256, (3, 3)))
 model.add(Activation('relu'))
 model.add(MaxPooling2D(pool_size=(2, 2)))
 
@@ -74,13 +74,18 @@ model.add(Conv2D(256, (3, 3)))
 model.add(Activation('relu'))
 model.add(MaxPooling2D(pool_size=(2, 2)))
 
+model.add(Conv2D(256, (3, 3)))
+model.add(Activation('relu'))
+model.add(MaxPooling2D(pool_size=(2, 2)))
+
+
 model.add(Flatten())
 model.add(Dropout(0.5))
 model.add(Dense(120))
 model.add(Activation('sigmoid'))
 sgd = optimizers.SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
-model.compile(loss='binary_crossentropy',
-              optimizer='sgd',
+model.compile(loss='categorical_crossentropy',
+              optimizer=sgd,
               metrics=['accuracy'])
 
 # this is the augmentation configuration we will use for training
