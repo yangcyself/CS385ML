@@ -100,7 +100,7 @@ def main():
     ################# RANDOM DATA GEN for DOGS ########################
     traindir = 'data/train'
     valdir = 'data/validation'
-    resolution = 160
+    resolution = 96
     channel_num = 3
     normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                      std=[0.229, 0.224, 0.225])
@@ -121,7 +121,7 @@ def main():
 
     val_loader = torch.utils.data.DataLoader(
         datasets.ImageFolder(valdir, transforms.Compose([
-            transforms.Resize(256),
+            transforms.Resize(resolution),
             transforms.CenterCrop(resolution),
             transforms.ToTensor(),
             normalize,
