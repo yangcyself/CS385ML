@@ -4,13 +4,13 @@ import cv2
 from config import *
 
 def image2label(img):
-    img = cv2.resize(img, (m, m), cv2.INTER_CUBIC)
+    img = cv2.resize(img, (INPUT_WIDTH, INPUT_HEIGHT), cv2.INTER_CUBIC)
     _, y = cv2.threshold(img, 0.5, 1, cv2.THRESH_BINARY)
-    y = y.reshape(1, m*m)
+    y = y.reshape(1, INPUT_WIDTH*INPUT_HEIGHT)
     return y
 
 def label2image(y):
-    img = y.reshape(m, m)
+    img = y.reshape(INPUT_WIDTH, INPUT_HEIGHT)
     _, img = cv2.threshold(img, 0.5, 255, cv2.THRESH_BINARY)
     return img
 
@@ -58,6 +58,7 @@ def move_images():
             
 
 if __name__ == "__main__":
+    process_segmentations()
     move_images()
 
 

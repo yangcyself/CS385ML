@@ -18,3 +18,18 @@ def idx2onehot(idx, n):
     onehot.scatter_(1, idx, 1)
 
     return onehot
+
+class RollingMeasure(object):
+    def __init__(self):
+        self.measure = 0.0
+        self.iter = 0
+
+    def __call__(self, measure):
+        # passo nuovo valore e ottengo average
+        # se first call inizializzo
+        if self.iter == 0:
+            self.measure = measure
+        else:
+            self.measure = (1.0 / self.iter * measure) + (1 - 1.0 / self.iter) * self.measure
+        self.iter += 1
+        return self.measure

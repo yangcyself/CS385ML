@@ -10,6 +10,7 @@ import json
 from models import model_from_name
 import six
 from config import *
+from keras.metrics import binary_accuracy
 EPS = 1e-12
 
 random.seed(0)
@@ -20,7 +21,7 @@ def model_from_checkpoint_path(checkpoints_path):
     # rebuild model from checkpoint path
     assert (os.path.isfile(checkpoints_path + "_config.json")), "Checkpoint not found."
     model_config = json.loads(open(checkpoints_path + "_config.json", "r").read())
-    latest_weights = find_latest_checkpoint(checkpoints_path)
+    latest_weights, _ = find_latest_checkpoint(checkpoints_path)
     assert (not latest_weights is None), "Checkpoint not found."
     model = model_from_name[model_config['model_class']](model_config['n_classes'],
                                                          input_height=model_config['input_height'],
@@ -109,25 +110,43 @@ def get_iou(gt, pr, n_classes):
     return class_wise
 
 
+def get_binary_accuracy(gt, pr):
+    return np.mean(np.equal(gt, np.round(pr)))
+
+
 def evaluate(model=None, inp_images=None, annotations=None, checkpoints_path=None):
     ious = []
+    accs = []
     if not checkpoints_path is None:
         model = model_from_checkpoint_path(checkpoints_path)
     image_seg_pairs = get_pairs_from_paths(inp_images, annotations)
     for inp, ann in image_seg_pairs:
         pr = predict(model, inp).reshape(model.output_height * model.output_width)
+        if np.isnan(pr).any():
+            print("got nan on %s" % inp)
+            continue
         gt = get_segmentation_arr(ann, model.n_classes, model.output_width, model.output_height)
         gt = gt.argmax(-1)
         iou = get_iou(gt, pr, model.n_classes)
+        acc = get_binary_accuracy(gt, pr)
         ious.append(iou)
+        accs.append(acc)
+
     ious = np.array(ious)
     print("Class wise IoU ", np.mean(ious, axis=0))
-    print("Total IoU ", np.mean(ious))
+    print("Mean IoU ", np.mean(ious))
+    print("Mean Acc", np.mean(accs))
 
 
 if __name__ == '__main__':
+    checkpoints = "checkpoints/" + MODEL_NAME
+
+    predict_multiple(checkpoints_path=checkpoints,
+                     inp_dir="images/sample_images",
+                     out_dir="images/" + MODEL_NAME
+                     )
 
     evaluate(inp_images="images/sample_images",
              annotations="images/sample_labels",
-             checkpoints_path="checkpoints/fcn_8_vgg",
+             checkpoints_path=checkpoints,
              )
