@@ -264,8 +264,8 @@ optimizer_ft = optim.RMSprop(model_ft.parameters(), lr=0.0001)
 
 # Run the functions and save the best model in the function model_ft.
 model_ft = train_model(model_ft, criterion, optimizer_ft, exp_lr_scheduler,
-                       num_epochs=50)
+                       num_epochs=100)
 
 # Save model
 #model_ft.save_state_dict('fine_tuned_best_model.pt')
-torch.save(model.state_dict(), 'finetuneckpts/fine_tuned_best_model.pt')
+torch.save(model_ft.state_dict(), 'finetuneckpts/fine_tuned_best_model.pt')
