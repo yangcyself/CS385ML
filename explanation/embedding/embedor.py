@@ -15,8 +15,8 @@ class convEmbeder(object):
     Please modify forward() and backward() according to your task.
     """
 
-    def __init__(self, model,candidata_layers = None):
-        super(embeder, self).__init__()
+    def __init__(self, model,candidate_layers = None):
+        super(convEmbeder, self).__init__()
         self.device = next(model.parameters()).device
         self.fmap_pool = OrderedDict()
         self.model = model
@@ -40,9 +40,9 @@ class convEmbeder(object):
 
     def _find(self, pool, target_layer):
         if target_layer in pool.keys():
-        return pool[target_layer]
-    else:
-        raise ValueError("Invalid layer name: {}".format(target_layer))
+            return pool[target_layer]
+        else:
+            raise ValueError("Invalid layer name: {}".format(target_layer))
 
 
     def forward(self, image):
