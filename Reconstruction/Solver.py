@@ -71,7 +71,7 @@ class ConvSolver(Solver):
         """
         mean_sq = z_mean * z_mean
 
-        return 0.5 * torch.mean(mean_sq - log_sigma + torch.exp(log_sigma) - 1)
+        return 0.5 * torch.sum(mean_sq - log_sigma + torch.exp(log_sigma) - 1)
 
     def train_and_decode(self, train_dataloader, valid_dataloader,
                          test_dataloader, max_epoch=100, later=0):
