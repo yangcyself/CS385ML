@@ -1,0 +1,27 @@
+layer {
+  name: "conv7"
+  type: "Convolution"
+  bottom: "drop6"
+  top: "conv7"
+  convolution_param {
+    num_output: 4096
+    kernel_size: 7
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name:"drop7"
+  type:"Dropout"
+  bottom:"conv7"
+  top: "drop7"
+  dropout_param{
+      rate: 0.5
+  }
+}
