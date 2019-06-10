@@ -163,3 +163,7 @@ def get_resnet50_encoder(input_height=224, input_width=224, pretrained=True,
         Model(img_input, x).load_weights(weights_path)
 
     return img_input, [f1, f2, f3, f4, f5]
+
+
+def build_resnet_18(input_shape, num_outputs):
+    return ResnetBuilder.build(input_shape, num_outputs, basic_block, [2, 2, 2, 2])
