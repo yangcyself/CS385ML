@@ -16,3 +16,4 @@ temp/__pycache__/*
 Reconstruction/vae_gan_images/*
 classification/data/*
 
+Reconstruction/*.png
