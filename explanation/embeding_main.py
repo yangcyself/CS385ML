@@ -103,14 +103,3 @@ with tf.Session() as sess:
     embedding.metadata_path = 'metadata.tsv'
     # Saves a config file that TensorBoard will read during startup.
     projector.visualize_embeddings(tf.summary.FileWriter(LOG_DIR), config)
-
-        
-    
-
-
-
-
-
-
-
-

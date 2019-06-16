@@ -126,8 +126,7 @@ class ConvSolver(Solver):
                 print('Evaluation:\tEpoch : {}\tTime : {}s\tMSELoss : {}'.format(i, time.time() - start_time, dev_mse_loss))
             start_time = time.time()
             test_mse_loss = self.validate(test_dataloader)
-            if i % 10 == 0:
-                print('Test:\tEpoch : {}\tTime : {}s\tMSELoss : {}\n'.format(i, time.time() - start_time, test_mse_loss))
+            print('Test:\tEpoch : {}\tTime : {}s\tMSELoss : {}\n'.format(i, time.time() - start_time, test_mse_loss))
 
 class CVAESolver(Solver):
     def __init__(self, model, loss_function, optimizer, num_channels, conditional=False):
