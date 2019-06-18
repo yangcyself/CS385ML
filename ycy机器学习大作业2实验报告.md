@@ -192,11 +192,51 @@ I adapted the grad cam for the classification to the reconstruction tast and com
 
 ### Reconstruction on MNIST
 
+Our reconstruction works contains the following:
 
+#### Interpretation of diﬀerent architecture VAE & diﬀerent loss 
+
+In theorey, VAE measurement can be seperated into two parts where the ﬁrst part  cares about the reconstruction and the second part  mapping to the prior. 
+
+The ﬁrst part we measured it using two kinds of loss functions, namely MSE & Cross Entropy. The encoder & decoder we use conv & linear model. Both MSE Loss & Corss Entropy Loss aims to mearsure the likelihood thus the interpretation of both loss should be similar. However, Conv model has its receptive ﬁeld & get the image as a whole. It may has a diﬀerent understanding of the digits. Phenomena
+
+##### Observations:
+
+![1560872173878](D:\yangcy\UNVjunior\CS385\PROJ2\CS385ML\explanation\docs\pics\1560872173878.png)
+
+![1560872214491](D:\yangcy\UNVjunior\CS385\PROJ2\CS385ML\explanation\docs\pics\1560872214491.png)
+
+![1560872234807](D:\yangcy\UNVjunior\CS385\PROJ2\CS385ML\explanation\docs\pics\1560872234807.png)
+
+As we can see in the pictures, conv. models gives us a distinct interpretation on digits while the ﬁrst two graphs are almost the same. 
+
+#### Merging two categories of images & Imputation 
+
+![1560872276638](D:\yangcy\UNVjunior\CS385\PROJ2\CS385ML\explanation\docs\pics\1560872276638.png)
+
+#### different VAE structures
+
+##### DVAE
+
+![1560872308453](D:\yangcy\UNVjunior\CS385\PROJ2\CS385ML\explanation\docs\pics\1560872308453.png)
+
+##### CVAE
+
+![1560872328659](D:\yangcy\UNVjunior\CS385\PROJ2\CS385ML\explanation\docs\pics\1560872328659.png)
 
 ### Reconstruction on Stanford dogs
 
+#### Train a VAE model
 
+![1560872361334](D:\yangcy\UNVjunior\CS385\PROJ2\CS385ML\explanation\docs\pics\1560872361334.png)
+
+We can see that what VAE do seems like to give a mask on the picture and makes it implicit. 
+
+#### Train a VAE-GAN model
+
+![1560872429389](D:\yangcy\UNVjunior\CS385\PROJ2\CS385ML\explanation\docs\pics\1560872429389.png)
+
+We can see the images generated are very explicit and yet have some kind of dog features.
 
 ### Area Grad Cam
 
@@ -240,17 +280,21 @@ The fifth and sixth of group of pictures shows the worest case, where the guided
 
 ## Segmentation
 
+We did some experiments in segmentation tasks, the experiments can be concluded as following:
+
+
+
+| Encoder | decoder | Mean Acc | total IoU | Epochs |
+| ------- | ------- | -------- | --------- | ------ |
+| alexnet | fcn_8   | 95.3     | 74.4      | 20     |
+| alexnet | fcn_32  | 94.7     | 70.0      | 20     |
+| vgg16   | fcn_8   | 85.9     | 76.7      | 20     |
+| vgg16   | fcn_32  | 82.1     | 70.6      | 20     |
+
 
 
 [^gradcam]:Selvaraju, R. R., Cogswell, M., Das, A., Vedantam, R., Parikh, D., & Batra, D. (n.d.). Grad-CAM: Visual Explanations from Deep Networks via Gradient-based Localization. Retrieved from http://gradcam.cloudcv.org
 
 
 
-
-
-# Appendix
-
-## grad cam for different models
-
-## area grad cam for VAE on dogs dataset
 
