@@ -21,8 +21,8 @@ The detailed structures is in the following list
 We train and test our structures on [CUB200 dataset](http://www.vision.caltech.edu/visipedia/CUB-200-2011.html), where it gives 11788 bird pictures of 200 kinds. According to the provided train_test_split annotations, we split the pictures into training set(5994 pictures) and validation set(5794 pictures). It provide the annotation for segmentation in which it only annotate the bird zone and non-bird zone, like this 
 
 <div align="center">
-    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/sample_images/Black_Footed_Albatross_0002_55.jpg" height="200px">
-    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/sample_labels/Black_Footed_Albatross_0002_55.png" height="200px">
+    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/sample_images/Acadian_Flycatcher_0051_29077.jpg" height="200px">
+    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/sample_labels/Acadian_Flycatcher_0051_29077.png" height="200px">
 </div>
 
 
@@ -46,12 +46,28 @@ for resnet, we didn't manage to finish the training because it requires way too 
 ----------raw image--------image labels--------fcn_8_alexnet--------fcn_32_alexnet--------fcn_8_vgg--------fcn_32_vgg
 
 <div align="center">
+    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/sample_images/Acadian_Flycatcher_0051_29077.jpg" width="125px">
+    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/sample_labels/Acadian_Flycatcher_0051_29077.png" width="125px">
+    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/fcn_8_alexnet/Acadian_Flycatcher_0051_29077.jpg" width="125px">
+    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/fcn_32_alexnet/Acadian_Flycatcher_0051_29077.jpg" width="125px">
+    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/fcn_8_vgg/Acadian_Flycatcher_0051_29077.jpg" width="125px">
+    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/fcn_32_vgg/Acadian_Flycatcher_0051_29077.jpg" width="125px">
+</div>
+<div align="center">
     <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/sample_images/Black_Footed_Albatross_0002_55.jpg" width="125px">
     <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/sample_labels/Black_Footed_Albatross_0002_55.png" width="125px">
     <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/fcn_8_alexnet/Black_Footed_Albatross_0002_55.jpg" width="125px">
     <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/fcn_32_alexnet/Black_Footed_Albatross_0002_55.jpg" width="125px">
     <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/fcn_8_vgg/Black_Footed_Albatross_0002_55.jpg" width="125px">
     <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/fcn_32_vgg/Black_Footed_Albatross_0002_55.jpg" width="125px">
+</div>
+<div align="center">
+    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/sample_images/Black_Tern_0017_143876.jpg" width="125px">
+    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/sample_labels/Black_Tern_0017_143876.png" width="125px">
+    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/fcn_8_alexnet/Black_Tern_0017_143876.jpg" width="125px">
+    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/fcn_32_alexnet/Black_Tern_0017_143876.jpg" width="125px">
+    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/fcn_8_vgg/Black_Tern_0017_143876.jpg" width="125px">
+    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/fcn_32_vgg/Black_Tern_0017_143876.jpg" width="125px">
 </div>
 <div align="center">
     <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/sample_images/Bronzed_Cowbird_0005_24173.jpg" width="125px">
@@ -62,28 +78,12 @@ for resnet, we didn't manage to finish the training because it requires way too 
     <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/fcn_32_vgg/Bronzed_Cowbird_0005_24173.jpg" width="125px">
 </div>
 <div align="center">
-    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/sample_images/European_Goldfinch_0013_794687.jpg" width="125px">
-    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/sample_labels/European_Goldfinch_0013_794687.png" width="125px">
-    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/fcn_8_alexnet/European_Goldfinch_0013_794687.jpg" width="125px">
-    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/fcn_32_alexnet/European_Goldfinch_0013_794687.jpg" width="125px">
-    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/fcn_8_vgg/European_Goldfinch_0013_794687.jpg" width="125px">
-    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/fcn_32_vgg/European_Goldfinch_0013_794687.jpg" width="125px">
-</div>
-<div align="center">
-    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/sample_images/Lazuli_Bunting_0025_15079.jpg" width="125px">
-    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/sample_labels/Lazuli_Bunting_0025_15079.png" width="125px">
-    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/fcn_8_alexnet/Lazuli_Bunting_0025_15079.jpg" width="125px">
-    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/fcn_32_alexnet/Lazuli_Bunting_0025_15079.jpg" width="125px">
-    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/fcn_8_vgg/Lazuli_Bunting_0025_15079.jpg" width="125px">
-    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/fcn_32_vgg/Lazuli_Bunting_0025_15079.jpg" width="125px">
-</div>
-<div align="center">
-    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/sample_images/Rhinoceros_Auklet_0001_797538.jpg" width="125px">
-    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/sample_labels/Rhinoceros_Auklet_0001_797538.png" width="125px">
-    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/fcn_8_alexnet/Rhinoceros_Auklet_0001_797538.jpg" width="125px">
-    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/fcn_32_alexnet/Rhinoceros_Auklet_0001_797538.jpg" width="125px">
-    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/fcn_8_vgg/Rhinoceros_Auklet_0001_797538.jpg" width="125px">
-    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/fcn_32_vgg/Rhinoceros_Auklet_0001_797538.jpg" width="125px">
+    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/sample_images/Brown_Pelican_0122_94022.jpg" width="125px">
+    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/sample_labels/Brown_Pelican_0122_94022.png" width="125px">
+    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/fcn_8_alexnet/Brown_Pelican_0122_94022.jpg" width="125px">
+    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/fcn_32_alexnet/Brown_Pelican_0122_94022.jpg" width="125px">
+    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/fcn_8_vgg/Brown_Pelican_0122_94022.jpg" width="125px">
+    <img src="https://github.com/yangcyself/CS385ML/blob/master/segmentation/images/fcn_32_vgg/Brown_Pelican_0122_94022.jpg" width="125px">
 </div>
 
 ## How to use
